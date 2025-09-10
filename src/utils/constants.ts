@@ -1,1 +1,1 @@
-export const FILENAME_LENGTH = 20;
+export const FILENAME_LENGTH = 30;
