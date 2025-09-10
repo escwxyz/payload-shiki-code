@@ -1,1 +1,2 @@
-export { BeforeDashboardClient } from '../components/BeforeDashboardClient.js'
+export type { CopyButtonProps } from "../components/CopyButtonClient.js";
+export { CopyButton } from "../components/CopyButtonClient.js";

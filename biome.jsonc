@@ -1,0 +1,17 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.2.2/schema.json",
+  "linter": {
+    "includes": ["./src/**/*.{tsx, ts}"],
+    "rules": {
+      "suspicious": {
+        "noConsole": {
+          "options": {
+            "allow": ["assert", "error", "info", "warn"]
+          }
+        },
+        "useAwait": "off"
+      }
+    }
+  },
+  "extends": ["ultracite"]
+}

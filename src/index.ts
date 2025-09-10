@@ -1,113 +1,42 @@
-import type { CollectionSlug, Config } from 'payload'
-
-import { customEndpointHandler } from './endpoints/customEndpointHandler.js'
-
-export type PayloadShikiCodeConfig = {
-  /**
-   * List of collections to add a custom field
-   */
-  collections?: Partial<Record<CollectionSlug, true>>
-  disabled?: boolean
-}
+import type { Config, Plugin } from "payload";
+import { PluginStateManager } from "./PluginStateManager.js";
+import type { PayloadShikiCodeConfig } from "./types.js";
 
 export const payloadShikiCode =
-  (pluginOptions: PayloadShikiCodeConfig) =>
-  (config: Config): Config => {
-    if (!config.collections) {
-      config.collections = []
-    }
-
-    config.collections.push({
-      slug: 'plugin-collection',
-      fields: [
-        {
-          name: 'id',
-          type: 'text',
-        },
-      ],
-    })
-
-    if (pluginOptions.collections) {
-      for (const collectionSlug in pluginOptions.collections) {
-        const collection = config.collections.find(
-          (collection) => collection.slug === collectionSlug,
-        )
-
-        if (collection) {
-          collection.fields.push({
-            name: 'addedByPlugin',
-            type: 'text',
-            admin: {
-              position: 'sidebar',
-            },
-          })
-        }
-      }
-    }
-
-    /**
-     * If the plugin is disabled, we still want to keep added collections/fields so the database schema is consistent which is important for migrations.
-     * If your plugin heavily modifies the database schema, you may want to remove this property.
-     */
+  (pluginOptions: PayloadShikiCodeConfig = {}): Plugin =>
+  (incomingConfig: Config): Config => {
     if (pluginOptions.disabled) {
-      return config
+      return incomingConfig;
     }
 
-    if (!config.endpoints) {
-      config.endpoints = []
+    try {
+      const stateManager = PluginStateManager.getInstance();
+      stateManager.initializeSync(pluginOptions);
+    } catch (error) {
+      console.error("Failed to initialize Payload Shiki Code plugin:", error);
     }
 
-    if (!config.admin) {
-      config.admin = {}
-    }
+    const config: Config = {
+      ...incomingConfig,
 
-    if (!config.admin.components) {
-      config.admin.components = {}
-    }
+      onInit: async (payload) => {
+        if (incomingConfig.onInit) {
+          await incomingConfig.onInit(payload);
+        }
+        try {
+          const stateManager = PluginStateManager.getInstance();
+          await stateManager.initialize(pluginOptions);
+        } catch (error) {
+          console.error(
+            "Failed to complete Payload Shiki Code plugin initialization:",
+            error
+          );
+        }
+      },
+    };
 
-    if (!config.admin.components.beforeDashboard) {
-      config.admin.components.beforeDashboard = []
-    }
+    return config;
+  };
 
-    config.admin.components.beforeDashboard.push(
-      `payload-shiki-code/client#BeforeDashboardClient`,
-    )
-    config.admin.components.beforeDashboard.push(
-      `payload-shiki-code/rsc#BeforeDashboardServer`,
-    )
-
-    config.endpoints.push({
-      handler: customEndpointHandler,
-      method: 'get',
-      path: '/my-plugin-endpoint',
-    })
-
-    const incomingOnInit = config.onInit
-
-    config.onInit = async (payload) => {
-      // Ensure we are executing any existing onInit functions before running our own.
-      if (incomingOnInit) {
-        await incomingOnInit(payload)
-      }
-
-      const { totalDocs } = await payload.count({
-        collection: 'plugin-collection',
-        where: {
-          id: {
-            equals: 'seeded-by-plugin',
-          },
-        },
-      })
-
-      if (totalDocs === 0) {
-        await payload.create({
-          collection: 'plugin-collection',
-          data: {
-            id: 'seeded-by-plugin',
-          },
-        })
-      }
-    }
-
-    return config
-  }
+export { createBlockConfig } from "./config.js";
+export type { PayloadShikiCodeConfig } from "./types.js";

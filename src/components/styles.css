@@ -1,0 +1,528 @@
+/* TODO: need to clean up */
+
+/* Container styles - full width and height */
+.shiki-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--shiki-border-color, rgba(0, 0, 0, 0.1));
+  border-radius: var(--shiki-border-radius, 0.5rem);
+  background: light-dark(var(--shiki-light-bg), var(--shiki-dark-bg));
+  overflow: hidden;
+  color-scheme: light dark;
+}
+
+/* Content wrapper with scrolling */
+.shiki-container .shiki-content {
+  flex: 1;
+  overflow: auto;
+  width: 100%;
+  position: relative;
+  min-height: 0;
+}
+
+/* Copy button */
+.shiki-copy-button {
+  position: absolute;
+  bottom: 0.75rem;
+  right: 0.75rem;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  background: light-dark(
+    var(--shiki-copy-button-bg, rgba(255, 255, 255, 0.9)),
+    var(--shiki-copy-button-bg-dark, rgba(30, 30, 30, 0.9))
+  );
+  color: light-dark(
+    var(--shiki-copy-button-color, rgb(59, 59, 59)),
+    var(--shiki-copy-button-color-dark, rgb(200, 200, 200))
+  );
+  border: 1px solid
+    light-dark(
+      var(--shiki-copy-button-border, rgba(0, 0, 0, 0.1)),
+      var(--shiki-copy-button-border-dark, rgba(255, 255, 255, 0.1))
+    );
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.shiki-copy-button:hover {
+  background: light-dark(
+    var(--shiki-copy-button-hover-bg, rgba(255, 255, 255, 1)),
+    var(--shiki-copy-button-hover-bg-dark, rgba(40, 40, 40, 0.95))
+  );
+  border-color: light-dark(
+    var(--shiki-copy-button-hover-border, rgba(0, 0, 0, 0.2)),
+    var(--shiki-copy-button-hover-border-dark, rgba(255, 255, 255, 0.2))
+  );
+  transform: translateY(-1px);
+}
+
+.shiki-copy-button:active {
+  transform: translateY(0);
+}
+
+.shiki-copy-button[data-copied="true"] {
+  color: light-dark(
+    var(--shiki-copy-success-color, rgb(34, 197, 94)),
+    var(--shiki-copy-success-color-dark, rgb(34, 197, 94))
+  );
+  border-color: light-dark(
+    var(--shiki-copy-success-border, rgba(34, 197, 94, 0.3)),
+    var(--shiki-copy-success-border-dark, rgba(34, 197, 94, 0.3))
+  );
+  background: light-dark(
+    var(--shiki-copy-success-bg, rgba(34, 197, 94, 0.1)),
+    var(--shiki-copy-success-bg-dark, rgba(34, 197, 94, 0.1))
+  );
+}
+
+.shiki-copy-button[data-copied="true"]:hover {
+  background: light-dark(
+    var(--shiki-copy-success-hover-bg, rgba(34, 197, 94, 0.15)),
+    var(--shiki-copy-success-hover-bg-dark, rgba(34, 197, 94, 0.15))
+  );
+}
+
+.shiki-copy-button svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Custom scrollbar styling */
+.shiki-container .shiki-content::-webkit-scrollbar,
+.shiki-figure .shiki-pre-wrapper::-webkit-scrollbar {
+  width: 10px;
+  height: 6px;
+}
+
+.shiki-container .shiki-content::-webkit-scrollbar-corner,
+.shiki-figure .shiki-pre-wrapper::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+.shiki-container .shiki-content::-webkit-scrollbar-track,
+.shiki-figure .shiki-pre-wrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.shiki-container .shiki-content::-webkit-scrollbar-thumb,
+.shiki-figure .shiki-pre-wrapper::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+}
+
+.shiki-container .shiki-content::-webkit-scrollbar-thumb:hover,
+.shiki-figure .shiki-pre-wrapper::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .shiki-container .shiki-content::-webkit-scrollbar-thumb,
+[data-theme="dark"] .shiki-figure .shiki-pre-wrapper::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"]
+  .shiki-container
+  .shiki-content::-webkit-scrollbar-thumb:hover,
+[data-theme="dark"]
+  .shiki-figure
+  .shiki-pre-wrapper::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Figure (transformed from pre) styles */
+.shiki-figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+/* Figcaption for filename - fixed header */
+.shiki-figure figcaption.shiki-caption {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--shiki-padding, 0.75rem 1rem);
+  background-color: var(--shiki-light-bg);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  font-family: var(--shiki-font-family, monospace);
+  font-size: var(--shiki-font-size, 0.875rem);
+  flex-shrink: 0;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+[data-theme="dark"] .shiki-figure figcaption.shiki-caption {
+  background-color: var(--shiki-dark-bg);
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Filename text */
+.shiki-figure figcaption .filename {
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--shiki-light);
+}
+
+[data-theme="dark"] .shiki-figure figcaption .filename {
+  color: var(--shiki-dark);
+}
+
+/* Language label in figcaption */
+.shiki-figure figcaption .language-label {
+  opacity: 0.5;
+  font-size: 0.75rem;
+  text-transform: lowercase;
+  flex-shrink: 0;
+  margin-left: 1rem;
+  color: var(--shiki-light);
+}
+
+[data-theme="dark"] .shiki-figure figcaption .language-label {
+  color: var(--shiki-dark);
+}
+
+/* Pre wrapper for scroll control */
+.shiki-figure .shiki-pre-wrapper {
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: visible;
+  width: 100%;
+  position: relative;
+  min-height: 0;
+}
+
+/* Pre element styles */
+.shiki-figure pre.shiki-pre {
+  margin: 0;
+  padding: var(--shiki-padding, 1rem);
+  padding-left: 0;
+  background-color: var(--shiki-light-bg);
+  font-family: var(--shiki-font-family, monospace);
+  font-size: var(--shiki-font-size, 0.875rem);
+  line-height: var(--shiki-line-height, 1.5);
+  position: relative;
+  overflow: visible;
+  width: max-content;
+  min-width: 100%;
+  min-height: 100%;
+  box-sizing: border-box;
+}
+
+/* Dark theme background */
+[data-theme="dark"] .shiki-figure pre.shiki-pre {
+  background-color: var(--shiki-dark-bg);
+}
+
+.shiki-figure pre.shiki-pre code {
+  display: block;
+  width: max-content;
+  min-width: 100%;
+  line-height: 0; /* Fix gap between lines */
+}
+
+/* Line numbers vertical separator removed - using border-right on line-number instead */
+
+/* Line styles - the transformer creates div.line elements */
+.shiki-figure .line {
+  display: block;
+  width: max-content;
+  min-width: 100%;
+  line-height: var(--shiki-line-height, 1.5);
+  min-height: var(--shiki-line-height, 1.5rem);
+  position: relative;
+  white-space: pre;
+}
+
+/* Line with line numbers needs flex display */
+.shiki-figure .line.line-numbers {
+  display: flex;
+  align-items: stretch;
+}
+
+/* Line number span element styling */
+.line-numbers .line-number {
+  position: sticky;
+  left: 0;
+  display: inline-flex;
+  justify-content: flex-start; /* Left align for better UX with 10+ lines */
+  align-items: center;
+  box-sizing: border-box;
+  min-width: 3.5rem;
+  padding-left: 1rem; /* Add left padding */
+  margin-right: var(--shiki-line-number-margin-right, 0.5rem); /* Configurable margin */
+  font-size: 0.75rem;
+  line-height: var(--shiki-line-height, 1.5);
+  user-select: none;
+  pointer-events: none;
+  z-index: 2;
+  /* Ensure full height to make border continuous */
+  align-self: stretch;
+  margin-top: 0;
+  margin-bottom: 0;
+  margin-left: 0;
+  /* Default background using light-dark() */
+  background-color: light-dark(var(--shiki-light-bg), var(--shiki-dark-bg));
+  /* backdrop-filter: blur(10px); */
+  /* Colors and border are handled by inline styles using light-dark() */
+}
+
+/* Wrap mode - when .wrap class is on .shiki-figure */
+.shiki-figure.wrap .shiki-pre-wrapper {
+  overflow-x: hidden;
+}
+
+.shiki-figure.wrap pre.shiki-pre {
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: normal;
+  width: 100%;
+  min-width: 100%;
+}
+
+.shiki-figure.wrap pre.shiki-pre code {
+  width: 100%;
+  min-width: 100%;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+.shiki-figure.wrap .line {
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: normal;
+  width: 100%;
+  min-width: 100%;
+}
+
+/* In wrap mode, ensure line numbers align correctly when lines wrap */
+.shiki-figure.wrap .line.line-numbers {
+  align-items: flex-start;
+}
+
+.shiki-figure.wrap .line-number {
+  align-self: flex-start;
+  padding-top: 0;
+  line-height: var(--shiki-line-height, 1.5);
+}
+
+/* Non-wrap mode - default behavior */
+.shiki-figure:not(.wrap) .shiki-pre-wrapper {
+  overflow-x: auto;
+}
+
+.shiki-figure:not(.wrap) pre.shiki-pre {
+  overflow-x: visible;
+}
+
+.shiki-figure:not(.wrap) .line {
+  white-space: pre;
+  word-break: keep-all;
+}
+
+/* Token colors with CSS variables */
+.shiki-figure span {
+  color: var(--shiki-light);
+}
+
+[data-theme="dark"] .shiki-figure span {
+  color: var(--shiki-dark);
+}
+
+/* Diff and highlight markers - configurable via CSS variables */
+
+/* Base styles for notation lines */
+.line.added,
+.line.removed,
+.line.highlighted {
+  position: relative;
+}
+
+/* Border style - colored left border with background */
+.notation-border .line.added,
+.notation-border .line.removed,
+.notation-border .line.highlighted {
+  margin: 0 -1rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  width: calc(100% + 2rem);
+}
+
+/* Border style - Style line numbers to match notation backgrounds */
+.notation-border .line.added .line-number::after,
+.notation-border .line.removed .line-number::after,
+.notation-border .line.highlighted .line-number::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  z-index: -1;
+}
+
+.notation-border .line.added .line-number::after {
+  background-color: var(--shiki-notation-add-bg, rgba(34, 197, 94, 0.1));
+}
+
+.notation-border .line.removed .line-number::after {
+  background-color: var(--shiki-notation-remove-bg, rgba(239, 68, 68, 0.1));
+}
+
+.notation-border .line.highlighted .line-number::after {
+  background-color: var(--shiki-notation-highlight-bg, rgba(234, 179, 8, 0.1));
+}
+
+.notation-border .line.added .line-number {
+  border-left: 3px solid var(--shiki-notation-add-border, rgb(34, 197, 94));
+  padding-left: calc(1rem - 3px);
+}
+
+.notation-border .line.removed .line-number {
+  border-left: 3px solid var(--shiki-notation-remove-border, rgb(239, 68, 68));
+  padding-left: calc(1rem - 3px);
+  opacity: 0.7;
+}
+
+.notation-border .line.highlight .line-number,
+.notation-border .line.highlighted .line-number {
+  border-left: 3px solid
+    var(--shiki-notation-highlight-border, rgb(234, 179, 8));
+  padding-left: calc(1rem - 3px);
+}
+
+/* Symbol style - show +/- symbols on line numbers instead of border */
+.notation-symbol .line.added .line-number {
+  background-color: var(--shiki-notation-add-bg, rgba(34, 197, 94, 0.1)) !important;
+}
+
+.notation-symbol .line.removed .line-number {
+  background-color: var(--shiki-notation-remove-bg, rgba(239, 68, 68, 0.1)) !important;
+  opacity: 0.7;
+}
+
+.notation-symbol .line.highlighted .line-number {
+  background-color: var(--shiki-notation-highlight-bg, rgba(234, 179, 8, 0.1)) !important;
+}
+
+/* Symbol style - colored backgrounds for whole lines */
+.notation-symbol .shiki-figure .line.added {
+  background-color: var(--shiki-notation-add-bg, rgba(34, 197, 94, 0.1));
+}
+
+.notation-symbol .shiki-figure .line.removed {
+  background-color: var(--shiki-notation-remove-bg, rgba(239, 68, 68, 0.1));
+  opacity: 0.7;
+}
+
+.notation-symbol .shiki-figure .line.highlighted {
+  background-color: var(--shiki-notation-highlight-bg, rgba(234, 179, 8, 0.1));
+}
+
+/* TODO: not working  Symbol style - add symbol as pseudo element on line number */
+.line-number[data-notation-symbol] {
+  position: sticky; /* Maintain sticky behavior */
+  left: 0;
+}
+
+.notation-symbol .line-number[data-notation-symbol]::before {
+  content: attr(data-notation-symbol);
+  position: absolute;
+  left: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--shiki-notation-add-border, rgb(34, 197, 94));
+  font-weight: bold;
+  font-family: var(--shiki-font-family, monospace);
+  font-size: 0.875rem;
+  line-height: 1;
+}
+
+.notation-symbol .line.removed .line-number[data-notation-symbol]::before {
+  color: var(--shiki-notation-remove-border, rgb(239, 68, 68));
+}
+
+/* Border style - colored backgrounds and borders */
+.notation-border .shiki-figure .line.added {
+  background-color: var(--shiki-notation-add-bg, rgba(34, 197, 94, 0.1));
+}
+
+.notation-border .shiki-figure .line.removed {
+  background-color: var(--shiki-notation-remove-bg, rgba(239, 68, 68, 0.1));
+  opacity: 0.7;
+}
+
+.notation-border .shiki-figure .line.highlighted {
+  background-color: var(--shiki-notation-highlight-bg, rgba(234, 179, 8, 0.1));
+}
+
+/* Border style - left border indicator using ::after */
+.notation-border .shiki-figure .line.added::after,
+.notation-border .shiki-figure .line.removed::after,
+.notation-border .shiki-figure .line.highlighted::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+}
+
+.notation-border .shiki-figure .line.added::after {
+  background-color: var(--shiki-notation-add-border, rgb(34, 197, 94));
+}
+
+.notation-border .shiki-figure .line.removed::after {
+  background-color: var(--shiki-notation-remove-border, rgb(239, 68, 68));
+}
+
+.notation-border .shiki-figure .line.highlighted::after {
+  background-color: var(--shiki-notation-highlight-border, rgb(234, 179, 8));
+}
+
+/* Language label styling when positioned in pre (no filename) */
+.shiki-figure pre.shiki-pre .language-label {
+  position: absolute;
+  right: 1rem;
+  top: 0.75rem;
+  font-family: var(--shiki-font-family, monospace);
+  font-size: 0.75rem;
+  letter-spacing: -0.05em;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+  pointer-events: none;
+  z-index: 10;
+  color: var(--shiki-light);
+  text-transform: lowercase;
+}
+
+[data-theme="dark"] .shiki-figure pre.shiki-pre .language-label {
+  color: var(--shiki-dark);
+}
+
+.shiki-figure:hover pre.shiki-pre .language-label {
+  opacity: 0.7;
+}

@@ -1,28 +1,38 @@
 {
   "name": "payload-shiki-code",
-  "version": "1.0.0",
-  "description": "A blank template to get started with Payload 3.0",
+  "version": "0.0.1",
+  "description": "A server rendered code block component powered by Shiki for Payload CMS",
   "license": "MIT",
   "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./src/index.ts",
-      "types": "./src/index.ts",
-      "default": "./src/index.ts"
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     },
     "./client": {
-      "import": "./src/exports/client.ts",
-      "types": "./src/exports/client.ts",
-      "default": "./src/exports/client.ts"
+      "import": "./dist/exports/client.js",
+      "types": "./dist/exports/client.d.ts"
     },
     "./rsc": {
-      "import": "./src/exports/rsc.ts",
-      "types": "./src/exports/rsc.ts",
-      "default": "./src/exports/rsc.ts"
+      "import": "./dist/exports/rsc.js",
+      "types": "./dist/exports/rsc.d.ts"
+    },
+    "./admin": {
+      "import": "./dist/exports/admin.js",
+      "types": "./dist/exports/admin.d.ts"
+    },
+    "./utils": {
+      "import": "./dist/exports/utils.js",
+      "types": "./dist/exports/utils.d.ts"
+    },
+    "./converters": {
+      "import": "./dist/exports/converters.js",
+      "types": "./dist/exports/converters.d.ts"
     }
   },
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
   "files": [
     "dist"
   ],
@@ -38,75 +48,53 @@
     "dev:payload": "cross-env PAYLOAD_CONFIG_PATH=./dev/payload.config.ts payload",
     "generate:importmap": "pnpm dev:generate-importmap",
     "generate:types": "pnpm dev:generate-types",
-    "lint": "eslint",
-    "lint:fix": "eslint ./src --fix",
-    "prepublishOnly": "pnpm clean && pnpm build",
     "test": "pnpm test:int && pnpm test:e2e",
     "test:e2e": "playwright test",
-    "test:int": "vitest"
+    "test:int": "vitest",
+    "format": "pnpm exec biome format --write .",
+    "ci:publish": "pnpm build && pnpm changeset publish"
+  },
+  "dependencies": {
+    "shiki": "^3.12.2"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3.2.0",
-    "@payloadcms/db-mongodb": "3.37.0",
-    "@payloadcms/db-postgres": "3.37.0",
-    "@payloadcms/db-sqlite": "3.37.0",
-    "@payloadcms/eslint-config": "3.9.0",
-    "@payloadcms/next": "3.37.0",
-    "@payloadcms/richtext-lexical": "3.37.0",
-    "@payloadcms/ui": "3.37.0",
+    "@biomejs/biome": "2.2.2",
+    "@changesets/cli": "^2.29.7",
+    "@payloadcms/db-mongodb": "3.54.0",
+    "@payloadcms/next": "3.54.0",
+    "@payloadcms/ui": "3.54.0",
     "@playwright/test": "^1.52.0",
     "@swc-node/register": "1.10.9",
     "@swc/cli": "0.6.0",
+    "@types/hast": "^3.0.4",
     "@types/node": "^22.5.4",
     "@types/react": "19.1.8",
     "@types/react-dom": "19.1.6",
     "copyfiles": "2.4.1",
     "cross-env": "^7.0.3",
-    "eslint": "^9.23.0",
-    "eslint-config-next": "15.4.4",
     "graphql": "^16.8.1",
     "mongodb-memory-server": "10.1.4",
     "next": "15.4.4",
     "open": "^10.1.0",
-    "payload": "3.37.0",
-    "prettier": "^3.4.2",
+    "payload": "3.54.0",
     "qs-esm": "7.0.2",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "rimraf": "3.0.2",
     "sharp": "0.34.2",
     "sort-package-json": "^2.10.0",
-    "typescript": "5.7.3",
+    "typescript": "5.8.3",
+    "ultracite": "5.3.4",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.1.2"
   },
   "peerDependencies": {
-    "payload": "^3.37.0"
+    "@payloadcms/richtext-lexical": "3.54.0",
+    "payload": "^3.54.0"
   },
   "engines": {
     "node": "^18.20.2 || >=20.9.0",
     "pnpm": "^9 || ^10"
-  },
-  "publishConfig": {
-    "exports": {
-      ".": {
-        "import": "./dist/index.js",
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
-      },
-      "./client": {
-        "import": "./dist/exports/client.js",
-        "types": "./dist/exports/client.d.ts",
-        "default": "./dist/exports/client.js"
-      },
-      "./rsc": {
-        "import": "./dist/exports/rsc.js",
-        "types": "./dist/exports/rsc.d.ts",
-        "default": "./dist/exports/rsc.js"
-      }
-    },
-    "main": "./dist/index.js",
-    "types": "./dist/index.d.ts"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
@@ -115,6 +103,5 @@
       "unrs-resolver"
     ]
   },
-  "registry": "https://registry.npmjs.org/",
-  "dependencies": {}
+  "registry": "https://registry.npmjs.org/"
 }

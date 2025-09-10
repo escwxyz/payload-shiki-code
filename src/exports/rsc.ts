@@ -1,1 +1,2 @@
-export { BeforeDashboardServer } from '../components/BeforeDashboardServer.js'
+export type { CodeBlockProps } from "../components/CodeServer.js";
+export { CodeBlock } from "../components/CodeServer.js";

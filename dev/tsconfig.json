@@ -16,20 +16,13 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
-      "@payload-config": [
-        "./payload.config.ts"
-      ],
-      "payload-shiki-code": [
-        "../src/index.ts"
-      ],
-      "payload-shiki-code/client": [
-        "../src/exports/client.ts"
-      ],
-      "payload-shiki-code/rsc": [
-        "../src/exports/rsc.ts"
-      ]
+      "@payload-config": ["./payload.config.ts"],
+      "payload-shiki-code": ["../src/index.ts"],
+      "payload-shiki-code/client": ["../src/exports/client.ts"],
+      "payload-shiki-code/rsc": ["../src/exports/rsc.ts"],
+      "payload-shiki-code/converters": ["../src/exports/converters.ts"]
     },
     "noEmit": true,
-    "emitDeclarationOnly": false,
+    "emitDeclarationOnly": false
   }
 }
