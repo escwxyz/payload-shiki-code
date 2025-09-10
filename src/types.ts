@@ -321,6 +321,7 @@ export type StyleOptions = {
 export type PayloadShikiCodeConfig = {
   /**
    * Enable or disable the plugin
+   * @default false
    */
   disabled?: boolean;
 

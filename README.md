@@ -1,218 +1,502 @@
-# Payload Plugin Template
+# Payload Shiki Code Plugin
 
-A template repo to create a [Payload CMS](https://payloadcms.com) plugin.
+A Payload CMS plugin that integrates [Shiki](https://shiki.style) syntax highlighting for code blocks with support for richtext fields. Provides server-side syntax highlighting with extensive theme and language support, lazy loading, and maximum customization options.
 
-Payload is built with a robust infrastructure intended to support Plugins with ease. This provides a simple, modular, and reusable way for developers to extend the core capabilities of Payload.
+![light](./assets/light.png)
+![dark](./assets/dark.png)
 
-To build your own Payload plugin, all you need is:
+## Features
 
-- An understanding of the basic Payload concepts
-- And some JavaScript/Typescript experience
+- Server-side syntax highlighting using Shiki
+- 60+ programming languages supported
+- 66+ themes (light and dark variants)
+- Lazy loading of languages
+- Field-based notation for line highlighting, diff markers
+- Customizable display options (line numbers, language labels, wrapping (not working properly yet))
+- Lifecycle hooks for extensibility
+- TypeScript support with full type safety
+- Cached highlighter instance for optimal performance
 
-## Background
+## Installation
 
-Here is a short recap on how to integrate plugins with Payload, to learn more visit the [plugin overview page](https://payloadcms.com/docs/plugins/overview).
+```bash
+npm install payload-shiki-code
+# or
+pnpm add payload-shiki-code
+# or
+yarn add payload-shiki-code
+```
 
-### How to install a plugin
+## Basic Usage
 
-To install any plugin, simply add it to your payload.config() in the Plugin array.
+### 1. Configure the Plugin
 
-```ts
-import myPlugin from 'my-plugin'
+Add the plugin to your Payload configuration:
 
-export const config = buildConfig({
+```typescript
+// payload.config.ts
+import { buildConfig } from "payload/config";
+import { payloadShikiCode } from "payload-shiki-code";
+
+export default buildConfig({
   plugins: [
-    // You can pass options to the plugin
-    myPlugin({
-      enabled: true,
+    payloadShikiCode({
+      languages: ["javascript", "typescript", "python", "html", "css"], 
+      displayOptions: {
+        lineNumbers: true,
+        showLanguage: true,
+        wrapLines: false,
+        copyButton: true,
+      },
+      shiki: {
+        themes: {
+          light: "github-light", // default global theme for light mode
+          dark: "github-dark", // default global theme for dark mode
+        },
+        engine: "oniguruma", // or 'javascript'
+      },
+      // ... other options
     }),
   ],
-})
+  // ... rest of your config
+});
 ```
 
-### Initialization
 
-The initialization process goes in the following order:
+If you need dark mode support, make sure add following to your global css:
 
-1. Incoming config is validated
-2. **Plugins execute**
-3. Default options are integrated
-4. Sanitization cleans and validates data
-5. Final config gets initialized
+```css
+:root {
+  color-scheme: light dark;
+} 
+```
 
-## Building the Plugin
+### 2. Add Code Block to Richtext Fields
 
-When you build a plugin, you are purely building a feature for your project and then abstracting it outside of the project.
+Import and add the code block to your richtext fields:
 
-### Template Files
+```typescript
+// In your collection/global configuration
+import { lexicalEditor } from "@payloadcms/richtext-lexical";
+import { BlocksFeature } from "@payloadcms/richtext-lexical/client";
+import { createBlockConfig } from "payload-shiki-code";
 
-In the Payload [plugin template](https://github.com/payloadcms/payload/tree/main/templates/plugin), you will see a common file structure that is used across all plugins:
-
-1. root folder
-2. /src folder
-3. /dev folder
-
-#### Root
-
-In the root folder, you will see various files that relate to the configuration of the plugin. We set up our environment in a similar manner in Payload core and across other projects, so hopefully these will look familiar:
-
-- **README**.md\* - This contains instructions on how to use the template. When you are ready, update this to contain instructions on how to use your Plugin.
-- **package**.json\* - Contains necessary scripts and dependencies. Overwrite the metadata in this file to describe your Plugin.
-- .**eslint**.config.js - Eslint configuration for reporting on problematic patterns.
-- .**gitignore** - List specific untracked files to omit from Git.
-- .**prettierrc**.json - Configuration for Prettier code formatting.
-- **tsconfig**.json - Configures the compiler options for TypeScript
-- .**swcrc** - Configuration for SWC, a fast compiler that transpiles and bundles TypeScript.
-- **vitest**.config.js - Config file for Vitest, defining how tests are run and how modules are resolved
-
-**IMPORTANT\***: You will need to modify these files.
-
-#### Dev
-
-In the dev folder, you’ll find a basic payload project, created with `npx create-payload-app` and the blank template.
-
-**IMPORTANT**: Make a copy of the `.env.example` file and rename it to `.env`. Update the `DATABASE_URI` to match the database you are using and your plugin name. Update `PAYLOAD_SECRET` to a unique string.
-**You will not be able to run `pnpm/yarn dev` until you have created this `.env` file.**
-
-`myPlugin` has already been added to the `payload.config()` file in this project.
-
-```ts
-plugins: [
-  myPlugin({
-    collections: {
-      posts: true,
+export const Posts = {
+  slug: "posts",
+  fields: [
+    {
+      name: "content",
+      type: "richText",
+      editor: lexicalEditor({
+        features: ({ defaultFeatures }) => [
+          ...defaultFeatures,
+          BlocksFeature({
+            blocks: [
+              createBlockConfig(), // Add the code block
+            ],
+          }),
+        ],
+      }),
     },
-  }),
-]
+  ],
+};
 ```
 
-Later when you rename the plugin or add additional options, **make sure to update it here**.
+### 3. Add JSX Converters for Frontend Rendering
 
-You may wish to add collections or expand the test project depending on the purpose of your plugin. Just make sure to keep this dev environment as simplified as possible - users should be able to install your plugin without additional configuration required.
+To render code blocks on your frontend, add the JSX converters:
 
-When you’re ready to start development, initiate the project with `pnpm/npm/yarn dev` and pull up [http://localhost:3000](http://localhost:3000) in your browser.
+```typescript
+// For React frontend rendering
+import { createCodeBlockJSXConverter } from 'payload-shiki-code/converters'
 
-#### Src
+const jsxConverters: JSXConvertersFunction<NodeTypes> = ({
+  defaultConverters,
+}) => ({
+  ...defaultConverters,
+  ...createCodeBlockJSXConverter("test"), // extra classnames to the code block
+});
 
-Now that we have our environment setup and we have a dev project ready to - it’s time to build the plugin!
-
-**index.ts**
-
-The essence of a Payload plugin is simply to extend the payload config - and that is exactly what we are doing in this file.
-
-```ts
-export const myPlugin =
-  (pluginOptions: MyPluginConfig) =>
-  (config: Config): Config => {
-    // do cool stuff with the config here
-
-    return config
-  }
+// Use with your richtext rendering
+<RichText data={post.content} converters={jsxConverters} />
 ```
 
-First, we receive the existing payload config along with any plugin options.
+## Configuration Options
 
-From here, you can extend the config as you wish.
+### Plugin Options
 
-Finally, you return the config and that is it!
+```typescript
+interface PayloadShikiCodeConfig {
+  // Plugin control
+  disabled?: boolean;
+  blockSlug?: string; // default: 'code'
+  blockInterfaceName?: string; // default: 'CodeBlock'
+  cacheHighlighter?: boolean; // default: true
 
-##### Spread Syntax
+  // Language configuration
+  languages?: Array<BundledLanguage | SpecialLanguage | LanguageRegistration>; // default: ['text'] - only these languages will be loaded
 
-Spread syntax (or the spread operator) is a feature in JavaScript that uses the dot notation **(...)** to spread elements from arrays, strings, or objects into various contexts.
+  // Shiki configuration
+  shiki?: {
+    themes?: {
+      light: BundledTheme | ThemeRegistration;
+      dark: BundledTheme | ThemeRegistration;
+      [key: string]: BundledTheme | ThemeRegistration;
+    };
+    highlighterOptions?: Partial<HighlighterCoreOptions>;
+    codeToHastOptions?: Partial<CodeToHastOptions>;
+    transformers?: Array<ShikiTransformer | TransformerFactory>;
+    engine?: "oniguruma" | "javascript";
+  };
 
-We are going to use spread syntax to allow us to add data to existing arrays without losing the existing data. It is crucial to spread the existing data correctly – else this can cause adverse behavior and conflicts with Payload config and other plugins.
+  // Display defaults
+  displayOptions?: {
+    lineNumbers?: boolean; // default: true
+    showLanguage?: boolean; // default: true
+    wrapLines?: boolean; // default: false
+    copyButton?: boolean; // default: true
+    startLineNumber?: number; // default: 1
+    containerClasses?: string[];
+    preClasses?: string[];
+    codeClasses?: string[];
+  };
 
-Let’s say you want to build a plugin that adds a new collection:
+  // Notation styling
+  notationOptions?: {
+    highlight?: {
+      backgroundColor?: string;
+      className?: string;
+    };
+    add?: {
+      backgroundColor?: string;
+      className?: string;
+      symbol?: string;
+    };
+    remove?: {
+      backgroundColor?: string;
+      className?: string;
+      symbol?: string;
+    };
+  };
 
-```ts
-config.collections = [
-  ...(config.collections || []),
-  // Add additional collections here
-]
-```
+  // Style customization
+  styleOptions?: {
+    cssVariables?: Record<string, string>;
+    borderColor?: string;
+    borderRadius?: string;
+    backgroundColor?: string;
+    padding?: string;
+    fontFamily?: string;
+    fontSize?: string;
+    lineHeight?: string;
+  };
 
-First we spread the `config.collections` to ensure that we don’t lose the existing collections, then you can add any additional collections just as you would in a regular payload config.
-
-This same logic is applied to other properties like admin, hooks, globals:
-
-```ts
-config.globals = [
-  ...(config.globals || []),
-  // Add additional globals here
-]
-
-config.hooks = {
-  ...(incomingConfig.hooks || {}),
-  // Add additional hooks here
+  // Lifecycle hooks
+  hooks?: {
+    onHighlighterCreate?: (
+      highlighter: HighlighterCore
+    ) => void | Promise<void>;
+    onHighlighterDispose?: () => void | Promise<void>;
+    beforeRender?: (
+      code: string,
+      lang: string,
+      options: any
+    ) => void | Promise<void>;
+    afterRender?: (
+      html: string,
+      code: string,
+      lang: string
+    ) => void | Promise<void>;
+  };
 }
 ```
 
-Some properties will be slightly different to extend, for instance the onInit property:
+## Language Configuration
 
-```ts
-import { onInitExtension } from './onInitExtension' // example file
+The plugin uses a simplified language configuration to optimize bundle size and improve performance:
 
-config.onInit = async (payload) => {
-  if (incomingConfig.onInit) await incomingConfig.onInit(payload)
-  // Add additional onInit code by defining an onInitExtension function
-  onInitExtension(pluginOptions, payload)
-}
-```
-
-If you wish to add to the onInit, you must include the **async/await**. We don’t use spread syntax in this case, instead you must await the existing `onInit` before running additional functionality.
-
-In the template, we have stubbed out some addition `onInit` actions that seeds in a document to the `plugin-collection`, you can use this as a base point to add more actions - and if not needed, feel free to delete it.
-
-##### Types.ts
-
-If your plugin has options, you should define and provide types for these options.
-
-```ts
-export type MyPluginConfig = {
-  /**
-   * List of collections to add a custom field
-   */
-  collections?: Partial<Record<CollectionSlug, true>>
-  /**
-   * Disable the plugin
-   */
-  disabled?: boolean
-}
-```
-
-If possible, include JSDoc comments to describe the options and their types. This allows a developer to see details about the options in their editor.
-
-##### Testing
-
-Having a test suite for your plugin is essential to ensure quality and stability. **Vitest** is a fast, modern testing framework that works seamlessly with Vite and supports TypeScript out of the box.
-
-Vitest organizes tests into test suites and cases, similar to other testing frameworks. We recommend creating individual tests based on the expected behavior of your plugin from start to finish.
-
-Writing tests with Vitest is very straightforward, and you can learn more about how it works in the [Vitest documentation.](https://vitest.dev/)
-
-For this template, we stubbed out `int.spec.ts` in the `dev` folder where you can write your tests.
-
-```ts
-describe('Plugin tests', () => {
-  // Create tests to ensure expected behavior from the plugin
-  it('some condition that must be met', () => {
-   // Write your test logic here
-   expect(...)
-  })
+```typescript
+export default buildConfig({
+  plugins: [
+    payloadShikiCode({
+      // Only these languages will be loaded and available, aliases will be excluded
+      languages: [
+        'javascript',
+        'typescript', 
+        'python',
+        'html',
+        'css',
+        'json',
+        'markdown',
+        'bash',
+        'text', // Special language for plain text
+        'ansi'  // Special language for ANSI colored output
+      ],
+    })
+  ]
 })
 ```
 
-## Best practices
+**Benefits:**
+- **Reduced Bundle Size**: Only specified languages are included in the server bundle
+- **Better Performance**: All languages are preloaded during highlighter initialization
+- **Type Safety**: Uses `BundledLanguage` type for autocomplete and validation
+- **Simplified Configuration**: Single `languages` array instead of multiple options
 
-With this tutorial and the plugin template, you should have everything you need to start building your own plugin.
-In addition to the setup, here are other best practices aim we follow:
+**Available Languages**: The `languages` option accepts:
+- **BundledLanguage**: All standard programming languages supported by Shiki (60+ languages including `javascript`, `typescript`, `python`, `go`, `rust`, etc.)
+- **SpecialLanguage**: Special languages like `text`, `ansi` for non-syntax-highlighted content  
+- **LanguageRegistration**: Custom language definitions for unsupported languages
 
-- **Providing an enable / disable option:** For a better user experience, provide a way to disable the plugin without uninstalling it. This is especially important if your plugin adds additional webpack aliases, this will allow you to still let the webpack run to prevent errors.
-- **Include tests in your GitHub CI workflow**: If you’ve configured tests for your package, integrate them into your workflow to run the tests each time you commit to the plugin repository. Learn more about [how to configure tests into your GitHub CI workflow.](https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs)
-- **Publish your finished plugin to NPM**: The best way to share and allow others to use your plugin once it is complete is to publish an NPM package. This process is straightforward and well documented, find out more [creating and publishing a NPM package here.](https://docs.npmjs.com/creating-and-publishing-scoped-public-packages/).
-- **Add payload-plugin topic tag**: Apply the tag **payload-plugin **to your GitHub repository. This will boost the visibility of your plugin and ensure it gets listed with [existing payload plugins](https://github.com/topics/payload-plugin).
-- **Use [Semantic Versioning](https://semver.org/) (SemVar)** - With the SemVar system you release version numbers that reflect the nature of changes (major, minor, patch). Ensure all major versions reference their Payload compatibility.
+See the [complete language list](https://shiki.style/languages) for all available options.
 
-# Questions
+## Advanced Usage
 
-Please contact [Payload](mailto:dev@payloadcms.com) with any questions about using this plugin template.
+### Custom Transformers
+
+Add custom Shiki transformers for additional functionality:
+
+```typescript
+import { payloadShikiCode } from "payload-shiki-code";
+import type { ShikiTransformer } from "shiki";
+
+const myCustomTransformer: ShikiTransformer = {
+  name: "my-transformer",
+  code(node) {
+    // Modify the code node
+    return node;
+  },
+};
+
+export default buildConfig({
+  plugins: [
+    payloadShikiCode({
+      shiki: {
+        transformers: [
+          myCustomTransformer,
+          // Or use a factory function that receives plugin options
+          (options) => ({
+            name: "context-aware-transformer",
+            code(node) {
+              // Access plugin options here
+              return node;
+            },
+          }),
+        ],
+      },
+    }),
+  ],
+});
+```
+
+### Custom Themes
+
+Use custom themes alongside or instead of bundled themes:
+
+```typescript
+import { payloadShikiCode } from "payload-shiki-code";
+
+const myCustomTheme = {
+  name: "my-theme",
+  // ... theme definition
+};
+
+export default buildConfig({
+  plugins: [
+    payloadShikiCode({
+      shiki: {
+        themes: {
+          light: "github-light",
+          dark: myCustomTheme,
+          custom: "dracula",
+        },
+      },
+    }),
+  ],
+});
+```
+
+### Custom Copy Button
+
+Replace the default copy button with your own implementation by passing it as a prop to the CodeBlock component:
+
+```tsx
+"use client";
+
+import { CodeBlock, type CodeBlockProps } from "payload-shiki-code/rsc";
+import type { CopyButtonProps } from "payload-shiki-code/client";
+
+// Custom copy button component
+const CustomCopyButton = ({ code, onCopySuccess, onCopyError }: CopyButtonProps) => {
+  return (
+    <button
+      onClick={async () => {
+        try {
+          await navigator.clipboard.writeText(code);
+          onCopySuccess?.();
+          console.log("Code copied!");
+        } catch (error) {
+          onCopyError?.(error as Error);
+        }
+      }}
+      className="my-custom-copy-button"
+    >
+      Copy to clipboard
+    </button>
+  );
+};
+
+// Use in your React component
+function MyCodeBlock({ data }: { data: CodeBlockProps["data"] }) {
+  return (
+    <CodeBlock 
+      data={data} 
+      CopyButton={CustomCopyButton} // Pass your custom copy button here
+    />
+  );
+}
+```
+
+The `CopyButtonProps` interface provides:
+- `code`: The code content to copy
+- `className`: Optional CSS class name
+- `ariaLabel`: Optional aria-label for accessibility
+- `onCopySuccess`: Callback when copy succeeds
+- `onCopyError`: Callback when copy fails
+- `successDuration`: Duration to show success state
+
+You can customize the copy button appearance through the plugin configuration:
+
+```typescript
+export default buildConfig({
+  plugins: [
+    payloadShikiCode({
+      styleOptions: {
+        copyButton: {
+          // Light theme styles
+          backgroundColor: "rgba(255, 255, 255, 0.95)",
+          color: "rgb(50, 50, 50)",
+          borderColor: "rgba(0, 0, 0, 0.15)",
+          hoverBackgroundColor: "rgba(255, 255, 255, 1)",
+          hoverBorderColor: "rgba(0, 0, 0, 0.25)",
+          successColor: "rgb(16, 185, 129)",
+          successBackgroundColor: "rgba(16, 185, 129, 0.1)",
+          successBorderColor: "rgba(16, 185, 129, 0.3)",
+          successHoverBackgroundColor: "rgba(16, 185, 129, 0.15)",
+          // Dark theme styles
+          dark: {
+            backgroundColor: "rgba(40, 40, 40, 0.95)",
+            color: "rgb(220, 220, 220)",
+            borderColor: "rgba(255, 255, 255, 0.15)",
+            hoverBackgroundColor: "rgba(50, 50, 50, 1)",
+            hoverBorderColor: "rgba(255, 255, 255, 0.25)",
+            successColor: "rgb(16, 185, 129)",
+            successBackgroundColor: "rgba(16, 185, 129, 0.1)",
+            successBorderColor: "rgba(16, 185, 129, 0.3)",
+            successHoverBackgroundColor: "rgba(16, 185, 129, 0.15)",
+          },
+        },
+      },
+    }),
+  ],
+});
+```
+
+Alternatively, you can override the CSS variables directly:
+
+```css
+:root {
+  /* Light theme */
+  --shiki-copy-button-bg: rgba(255, 255, 255, 0.9);
+  --shiki-copy-button-color: rgb(59, 59, 59);
+  --shiki-copy-button-border: rgba(0, 0, 0, 0.1);
+  --shiki-copy-button-hover-bg: rgba(255, 255, 255, 1);
+  --shiki-copy-button-hover-border: rgba(0, 0, 0, 0.2);
+  --shiki-copy-success-color: rgb(34, 197, 94);
+  --shiki-copy-success-border: rgba(34, 197, 94, 0.3);
+  --shiki-copy-success-bg: rgba(34, 197, 94, 0.1);
+  --shiki-copy-success-hover-bg: rgba(34, 197, 94, 0.15);
+
+  /* Dark theme */
+  --shiki-copy-button-bg-dark: rgba(30, 30, 30, 0.9);
+  --shiki-copy-button-color-dark: rgb(200, 200, 200);
+  --shiki-copy-button-border-dark: rgba(255, 255, 255, 0.1);
+  --shiki-copy-button-hover-bg-dark: rgba(40, 40, 40, 0.95);
+  --shiki-copy-button-hover-border-dark: rgba(255, 255, 255, 0.2);
+  --shiki-copy-success-color-dark: rgb(34, 197, 94);
+  --shiki-copy-success-border-dark: rgba(34, 197, 94, 0.3);
+  --shiki-copy-success-bg-dark: rgba(34, 197, 94, 0.1);
+  --shiki-copy-success-hover-bg-dark: rgba(34, 197, 94, 0.15);
+}
+```
+
+### Lifecycle Hooks
+
+Hook into the plugin lifecycle for custom functionality:
+
+```typescript
+export default buildConfig({
+  plugins: [
+    payloadShikiCode({
+      hooks: {
+        onHighlighterCreate: async (highlighter) => {
+          console.log(
+            "Highlighter created with themes:",
+            highlighter.getLoadedThemes()
+          );
+        },
+        beforeRender: async (code, lang, options) => {
+          // Log or modify before rendering
+          console.log(`Rendering ${lang} code block`);
+        },
+        afterRender: async (html, code, lang) => {
+          // Process the generated HTML
+        },
+      },
+    }),
+  ],
+});
+```
+
+## Block Fields
+
+The code block includes the following fields that users can configure:
+
+### Code Tab
+
+- **Language**: Select from preloaded languages
+- **File Name**: Optional filename display
+- **Notation Type**: Choose from 'add', 'remove', or 'highlight'
+- **Notation Range**: Specify line ranges (e.g., "1-5, 7, 10-12")
+- **Code**: The actual code content
+
+### Config Tab
+
+- **Light Theme**: Select theme for light mode
+- **Dark Theme**: Select theme for dark mode
+- **Show Line Numbers**: Toggle line number display
+- **Show Language Label**: Toggle language label display
+- **Wrap**: Enable/disable line wrapping
+
+## Performance Considerations
+
+- **Cached Highlighter**: By default, the plugin caches the Shiki highlighter instance for optimal performance
+- **Bundle Size Optimization**: Only the languages specified in the `languages` config are loaded, reducing server bundle size, the code block is a React server component, no extra JavaScript code for your frontend
+- **Server-Side Rendering**: All syntax highlighting happens on the server for better performance
+- **Language Preloading**: All configured languages are loaded when the highlighter is created, eliminating runtime loading delays
+
+## License
+
+[MIT](./LICENSE)
+
+## Contributing
+
+Contributions are welcome! Please read our contributing guidelines and submit pull requests to our repository.
+
+## Support
+
+For issues and questions:
+
+- Create an issue on our GitHub repository
+- Check the [Shiki documentation](https://shiki.style) for Shiki-specific questions
+- Refer to [Payload CMS documentation](https://payloadcms.com/docs) for Payload-related questions
