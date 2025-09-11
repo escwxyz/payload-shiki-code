@@ -8,12 +8,11 @@ on:
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
-  test:
-    uses: ./.github/workflows/test.yml
-
+  check:
+    uses: ./.github/workflows/check.yml
   release:
     name: Release
-    needs: test
+    needs: check
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
