@@ -99,9 +99,6 @@ const buildConfigWithMemoryDB = async () => {
             dark: "everforest-dark",
           },
         },
-        displayOptions: {
-          wrapLines: true,
-        },
       }),
     ],
     secret: process.env.PAYLOAD_SECRET || "test-secret_key",

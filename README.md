@@ -9,10 +9,10 @@ A Payload CMS plugin that integrates [Shiki](https://shiki.style) syntax highlig
 
 - Server-side syntax highlighting using Shiki
 - 60+ programming languages supported
-- 66+ themes (light and dark variants)
+- 60+ themes (light and dark variants)
 - Lazy loading of languages
 - Field-based notation for line highlighting, diff markers
-- Customizable display options (line numbers, language labels, wrapping (not working properly yet))
+- Customizable display options (line numbers, language labels)
 - Lifecycle hooks for extensibility
 - TypeScript support with full type safety
 - Cached highlighter instance for optimal performance
@@ -45,7 +45,6 @@ export default buildConfig({
       displayOptions: {
         lineNumbers: true,
         showLanguage: true,
-        wrapLines: false,
         copyButton: true,
       },
       shiki: {
@@ -53,7 +52,6 @@ export default buildConfig({
           light: "github-light", // default global theme for light mode
           dark: "github-dark", // default global theme for dark mode
         },
-        engine: "oniguruma", // or 'javascript'
       },
       // ... other options
     }),
@@ -63,7 +61,7 @@ export default buildConfig({
 ```
 
 
-If you need dark mode support, make sure add following to your global css:
+**NOTE**: If you need dark mode support, make sure add following to your global css:
 
 ```css
 :root {
@@ -143,17 +141,15 @@ interface PayloadShikiCodeConfig {
       dark: BundledTheme | ThemeRegistration;
       [key: string]: BundledTheme | ThemeRegistration;
     };
-    highlighterOptions?: Partial<HighlighterCoreOptions>;
+    highlighterOptions?: Partial<HighlighterCoreOptions>; // e.g., { engine: 'javascript' } for JS regex engine
     codeToHastOptions?: Partial<CodeToHastOptions>;
     transformers?: Array<ShikiTransformer | TransformerFactory>;
-    engine?: "oniguruma" | "javascript";
   };
 
   // Display defaults
   displayOptions?: {
     lineNumbers?: boolean; // default: true
     showLanguage?: boolean; // default: true
-    wrapLines?: boolean; // default: false
     copyButton?: boolean; // default: true
     startLineNumber?: number; // default: 1
     containerClasses?: string[];
@@ -165,17 +161,18 @@ interface PayloadShikiCodeConfig {
   notationOptions?: {
     highlight?: {
       backgroundColor?: string;
+      borderColor?: string;
       className?: string;
     };
     add?: {
       backgroundColor?: string;
+      borderColor?: string;
       className?: string;
-      symbol?: string;
     };
     remove?: {
       backgroundColor?: string;
+      borderColor?: string;
       className?: string;
-      symbol?: string;
     };
   };
 
@@ -189,12 +186,37 @@ interface PayloadShikiCodeConfig {
     fontFamily?: string;
     fontSize?: string;
     lineHeight?: string;
+    lineNumberMarginRight?: string;
+    copyButton?: {
+      // Light theme styles
+      backgroundColor?: string;
+      color?: string;
+      borderColor?: string;
+      hoverBackgroundColor?: string;
+      hoverBorderColor?: string;
+      successColor?: string;
+      successBackgroundColor?: string;
+      successBorderColor?: string;
+      successHoverBackgroundColor?: string;
+      // Dark theme styles
+      dark?: {
+        backgroundColor?: string;
+        color?: string;
+        borderColor?: string;
+        hoverBackgroundColor?: string;
+        hoverBorderColor?: string;
+        successColor?: string;
+        successBackgroundColor?: string;
+        successBorderColor?: string;
+        successHoverBackgroundColor?: string;
+      };
+    };
   };
 
   // Lifecycle hooks
   hooks?: {
     onHighlighterCreate?: (
-      highlighter: HighlighterCore
+      highlighter: HighlighterGeneric<BundledLanguage, BundledTheme>
     ) => void | Promise<void>;
     onHighlighterDispose?: () => void | Promise<void>;
     beforeRender?: (
@@ -289,33 +311,6 @@ export default buildConfig({
 });
 ```
 
-### Custom Themes
-
-Use custom themes alongside or instead of bundled themes:
-
-```typescript
-import { payloadShikiCode } from "payload-shiki-code";
-
-const myCustomTheme = {
-  name: "my-theme",
-  // ... theme definition
-};
-
-export default buildConfig({
-  plugins: [
-    payloadShikiCode({
-      shiki: {
-        themes: {
-          light: "github-light",
-          dark: myCustomTheme,
-          custom: "dracula",
-        },
-      },
-    }),
-  ],
-});
-```
-
 ### Custom Copy Button
 
 Replace the default copy button with your own implementation by passing it as a prop to the CodeBlock component:
@@ -325,21 +320,17 @@ Replace the default copy button with your own implementation by passing it as a 
 
 import { CodeBlock, type CodeBlockProps } from "payload-shiki-code/rsc";
 import type { CopyButtonProps } from "payload-shiki-code/client";
+// or import the default copy button
+// import { CopyButton } from "payload-shiki-code/client";
 
 // Custom copy button component
 const CustomCopyButton = ({ code, onCopySuccess, onCopyError }: CopyButtonProps) => {
+
+  // const handleClick = ...
+
   return (
     <button
-      onClick={async () => {
-        try {
-          await navigator.clipboard.writeText(code);
-          onCopySuccess?.();
-          console.log("Code copied!");
-        } catch (error) {
-          onCopyError?.(error as Error);
-        }
-      }}
-      className="my-custom-copy-button"
+      onClick={handleClick}  
     >
       Copy to clipboard
     </button>
@@ -467,7 +458,7 @@ The code block includes the following fields that users can configure:
 - **Language**: Select from preloaded languages
 - **File Name**: Optional filename display
 - **Notation Type**: Choose from 'add', 'remove', or 'highlight'
-- **Notation Range**: Specify line ranges (e.g., "1-5, 7, 10-12")
+- **Notation Range**: Specify line ranges as an array (e.g., ["1-5", "7", "10-12"])
 - **Code**: The actual code content
 
 ### Config Tab
@@ -477,6 +468,34 @@ The code block includes the following fields that users can configure:
 - **Show Line Numbers**: Toggle line number display
 - **Show Language Label**: Toggle language label display
 - **Wrap**: Enable/disable line wrapping
+
+## Additional Exports
+
+The plugin also provides these utility exports:
+
+```typescript
+// Admin components
+import { CodeFieldClient } from "payload-shiki-code/admin";
+
+// Utilities
+import { getLanguageAlias, loadTheme } from "payload-shiki-code/utils";
+
+// Default copy button component
+import { CopyButton } from "payload-shiki-code/client";
+```
+
+## CSS Classes
+
+The plugin provides several CSS classes for custom styling:
+
+- `.shiki-container` - Main container wrapper
+- `.shiki-content` - Content wrapper
+- `.shiki-header` - Header section with filename and language
+- `.shiki-file-name` - File name display
+- `.shiki-language` - Language label
+- `.shiki-code-wrapper` - Code area wrapper
+- `.shiki-line` - Individual code lines
+- `.shiki-line-number` - Line number elements
 
 ## Performance Considerations
 

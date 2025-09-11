@@ -10,7 +10,6 @@ type CoreTransformerProps = {
   showLineNumbers?: boolean;
   language?: BundledLanguage | SpecialLanguage | string;
   startLineNumber?: number;
-  wrap?: boolean;
 };
 
 export const createCoreStructureTransformer = ({
@@ -19,7 +18,6 @@ export const createCoreStructureTransformer = ({
   showLanguageLabel,
   language,
   startLineNumber = 1,
-  wrap = false,
 }: CoreTransformerProps): ShikiTransformer => {
   return {
     name: "core-structure",
@@ -83,12 +81,10 @@ export const createCoreStructureTransformer = ({
       const originalChildren = node.children || [];
 
       node.tagName = "figure";
-      const figureClasses = [
-        "shiki-figure",
-        fileName ? "has-filename" : "",
-        wrap ? "wrap" : "",
-      ].filter(Boolean).join(" ");
-      
+      const figureClasses = ["shiki-figure", fileName ? "has-filename" : ""]
+        .filter(Boolean)
+        .join(" ");
+
       node.properties = {
         ...node.properties,
         class: figureClasses,

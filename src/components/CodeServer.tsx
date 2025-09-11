@@ -1,6 +1,18 @@
 import type { ShikiTransformer } from "shiki";
 import { PluginStateManager } from "../PluginStateManager.js";
-import type { CodeBlockData } from "../types.js";
+import type {
+  CodeBlockData,
+  DisplayOptions,
+  NotationOptions,
+  ShikiOptions,
+  StyleOptions,
+} from "../types.js";
+import {
+  DEFAULT_DISPLAY_OPTIONS,
+  DEFAULT_NOTATION_OPTIONS,
+  DEFAULT_SHIKI_OPTIONS,
+  DEFAULT_STYLE_OPTIONS,
+} from "../utils/defaults.js";
 import { getHighlighter } from "../utils/highlighter.js";
 import { loadLanguage } from "../utils/langs.js";
 import { buildCssVariables } from "../utils/style.js";
@@ -26,54 +38,23 @@ export const CodeBlock = async ({
   const pluginContext = stateManager.getContext();
   const { config } = pluginContext;
 
-  const displayOptions = {
-    lineNumbers: true,
-    showLanguage: true,
-    wrapLines: false,
-    copyButton: true,
-    startLineNumber: 1,
-    containerClasses: [],
-    preClasses: [],
-    codeClasses: [],
+  const displayOptions: DisplayOptions = {
+    ...DEFAULT_DISPLAY_OPTIONS,
     ...config.displayOptions,
   };
 
-  const shikiOptions = {
-    themes: {
-      light: "github-light",
-      dark: "github-dark",
-    },
-    highlighterOptions: {},
-    codeToHastOptions: {},
-    transformers: [],
-    engine: "oniguruma" as const,
+  const shikiOptions: ShikiOptions = {
+    ...DEFAULT_SHIKI_OPTIONS,
     ...config.shiki,
   };
 
-  const styleOptions = {
-    borderColor: "#e1e4e8",
-    borderRadius: "6px",
-    padding: "1rem",
-    fontFamily: "Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace",
-    fontSize: "14px",
-    lineHeight: "1.5",
+  const styleOptions: StyleOptions = {
+    ...DEFAULT_STYLE_OPTIONS,
     ...config.styleOptions,
   };
 
-  const notationOptions = {
-    style: "border" as const,
-    highlight: {
-      backgroundColor: "rgba(255, 255, 0, 0.1)",
-      className: "highlighted",
-    },
-    add: {
-      backgroundColor: "rgba(0, 255, 0, 0.1)",
-      className: "added",
-    },
-    remove: {
-      backgroundColor: "rgba(255, 0, 0, 0.1)",
-      className: "removed",
-    },
+  const notationOptions: NotationOptions = {
+    ...DEFAULT_NOTATION_OPTIONS,
     ...config.notationOptions,
   };
 
@@ -85,18 +66,14 @@ export const CodeBlock = async ({
     darkTheme,
     showLineNumbers = displayOptions.lineNumbers,
     showLanguageLabel = displayOptions.showLanguage,
-    wrap: wrapFromData,
     notationType,
     notationRange,
     startLineNumber = displayOptions.startLineNumber,
   } = data;
 
-  const wrapEnabled =
-    typeof wrapFromData === "boolean" ? wrapFromData : displayOptions.wrapLines;
-
   const themes = {
-    light: lightTheme || shikiOptions.themes.light,
-    dark: darkTheme || shikiOptions.themes.dark,
+    light: lightTheme || shikiOptions.themes?.light,
+    dark: darkTheme || shikiOptions.themes?.dark,
   };
 
   if (config.hooks?.beforeRender) {
@@ -116,7 +93,6 @@ export const CodeBlock = async ({
     startLineNumber,
     notationType,
     notationRange,
-    wrap: wrapEnabled,
   });
 
   const html = highlighter.codeToHtml(code, {

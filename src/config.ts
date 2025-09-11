@@ -17,13 +17,11 @@ export const createBlockConfig = (): Block => {
     displayOptions = {},
     shiki = {},
     languages = ["text" as const],
-    // TODO: blockConfig
   } = context.config;
 
   const {
     lineNumbers: showLineNumbers = true,
     showLanguage: showLanguageLabel = true,
-    wrapLines: wrap = false,
   } = displayOptions;
 
   const {
@@ -161,16 +159,6 @@ export const createBlockConfig = (): Block => {
                   description:
                     "Show language label on the right top corner of the code block",
                 },
-              },
-              {
-                type: "checkbox",
-                name: "wrap",
-                label: "Wrap",
-                admin: {
-                  description:
-                    "Wrap the code if it exceeds the container width",
-                },
-                defaultValue: wrap,
               },
             ],
           },

@@ -66,12 +66,6 @@ export type DisplayOptions = {
   showLanguage?: boolean;
 
   /**
-   * Whether to wrap long lines
-   * @default false
-   */
-  wrapLines?: boolean;
-
-  /**
    * Whether to show the copy button
    * @default true
    */
@@ -131,6 +125,10 @@ export type NotationOptions = {
      */
     backgroundColor?: string;
     /**
+     * Border color for highlighted lines
+     */
+    borderColor?: string;
+    /**
      * CSS class for highlighted lines
      */
     className?: string;
@@ -145,6 +143,8 @@ export type NotationOptions = {
      * Background color for added lines
      */
     backgroundColor?: string;
+
+    borderColor?: string;
     /**
      * CSS class for added lines
      */
@@ -165,6 +165,10 @@ export type NotationOptions = {
      * Background color for removed lines
      */
     backgroundColor?: string;
+    /**
+     * Border color for removed lines
+     */
+    borderColor?: string;
     /**
      * CSS class for removed lines
      */
@@ -430,7 +434,6 @@ export type CodeBlockData = {
   darkTheme?: BundledTheme;
   showLineNumbers?: boolean;
   showLanguageLabel?: boolean;
-  wrap?: boolean;
   startLineNumber?: number;
 };
 

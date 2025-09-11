@@ -1,5 +1,6 @@
 import type { ShikiTransformer } from "shiki/core";
 import { PluginStateManager } from "../PluginStateManager.js";
+import { DEFAULT_NOTATION_OPTIONS } from "../utils/defaults.js";
 /**
  * Create a line notation transformer based on Payload field data
  * This handles the notation ranges specified in the block fields
@@ -39,24 +40,11 @@ export const createLineNotationTransformer = ({
   const stateManager = PluginStateManager.getInstance();
   const context = stateManager.getContext();
   const notationOptions = {
-    style: "border" as const,
-    highlight: {
-      backgroundColor: "rgba(255, 255, 0, 0.1)",
-      className: "highlighted",
-    },
-    add: {
-      backgroundColor: "rgba(0, 255, 0, 0.1)",
-      className: "added",
-    },
-    remove: {
-      backgroundColor: "rgba(255, 0, 0, 0.1)",
-      className: "removed",
-    },
+    ...DEFAULT_NOTATION_OPTIONS,
     ...context.config.notationOptions,
   };
   const config = notationOptions[notationType];
   const markerClass = config?.className || notationType;
-  const notationStyle = notationOptions.style || "border";
 
   return {
     name: "line-notation",
@@ -68,7 +56,7 @@ export const createLineNotationTransformer = ({
         // Add notation data attributes for CSS styling
         node.properties = {
           ...node.properties,
-          "data-notation-style": notationStyle,
+          // "data-notation-style": notationStyle,
         };
 
         // TODO: Symbol notation will be supported in a future release
@@ -91,7 +79,7 @@ export const createLineNotationTransformer = ({
       if (notationType === "add" || notationType === "remove") {
         this.addClassToHast(node, "has-diff"); // TODO: currently not used
       }
-      this.addClassToHast(node, `notation-${notationStyle}`); // TODO: currently not used
+      // this.addClassToHast(node, `notation-${notationStyle}`); // TODO: currently not used
       return node;
     },
   };

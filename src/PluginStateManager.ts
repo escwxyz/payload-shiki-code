@@ -1,6 +1,19 @@
 import type { BundledLanguage, BundledTheme, HighlighterGeneric } from "shiki";
 import { bundledLanguagesInfo, getSingletonHighlighter } from "shiki";
-import type { PayloadShikiCodeConfig, PluginContext } from "./types.js";
+import type {
+  DisplayOptions,
+  NotationOptions,
+  PayloadShikiCodeConfig,
+  PluginContext,
+  ShikiOptions,
+  StyleOptions,
+} from "./types.js";
+import {
+  DEFAULT_DISPLAY_OPTIONS,
+  DEFAULT_NOTATION_OPTIONS,
+  DEFAULT_SHIKI_OPTIONS,
+  DEFAULT_STYLE_OPTIONS,
+} from "./utils/defaults.js";
 import { normalizeLanguages } from "./utils/langs.js";
 import { extractThemeOptions } from "./utils/themes.js";
 
@@ -220,17 +233,10 @@ export class PluginStateManager {
   /**
    * Get display options with defaults
    */
-  getDisplayOptions() {
+  getDisplayOptions(): DisplayOptions {
     const context = this.getContext();
     return {
-      lineNumbers: true,
-      showLanguage: true,
-      wrapLines: false,
-      copyButton: true,
-      startLineNumber: 1,
-      containerClasses: [],
-      preClasses: [],
-      codeClasses: [],
+      ...DEFAULT_DISPLAY_OPTIONS,
       ...context.config.displayOptions,
     };
   }
@@ -238,26 +244,10 @@ export class PluginStateManager {
   /**
    * Get notation options with defaults
    */
-  getNotationOptions() {
+  getNotationOptions(): NotationOptions {
     const context = this.getContext();
     return {
-      style: "border" as const,
-      highlight: {
-        backgroundColor: "rgba(255, 255, 0, 0.1)",
-        className: "highlighted",
-      },
-      add: {
-        backgroundColor: "rgba(0, 255, 0, 0.1)",
-        className: "added",
-        // TODO: Symbol notation will be supported in a future release
-        // symbol: "+",
-      },
-      remove: {
-        backgroundColor: "rgba(255, 0, 0, 0.1)",
-        className: "removed",
-        // TODO: Symbol notation will be supported in a future release
-        // symbol: "-",
-      },
+      ...DEFAULT_NOTATION_OPTIONS,
       ...context.config.notationOptions,
     };
   }
@@ -265,15 +255,10 @@ export class PluginStateManager {
   /**
    * Get style options with defaults
    */
-  getStyleOptions() {
+  getStyleOptions(): StyleOptions {
     const context = this.getContext();
     return {
-      borderColor: "#e1e4e8",
-      borderRadius: "6px",
-      padding: "1rem",
-      fontFamily: "Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace",
-      fontSize: "14px",
-      lineHeight: "1.5",
+      ...DEFAULT_STYLE_OPTIONS,
       ...context.config.styleOptions,
     };
   }
@@ -281,17 +266,10 @@ export class PluginStateManager {
   /**
    * Get Shiki options with defaults
    */
-  getShikiOptions() {
+  getShikiOptions(): ShikiOptions {
     const context = this.getContext();
     return {
-      themes: {
-        light: "github-light",
-        dark: "github-dark",
-      },
-      highlighterOptions: {},
-      codeToHastOptions: {},
-      transformers: [],
-      engine: "oniguruma" as const,
+      ...DEFAULT_SHIKI_OPTIONS,
       ...context.config.shiki,
     };
   }

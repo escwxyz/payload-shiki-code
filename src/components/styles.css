@@ -1,5 +1,3 @@
-/* TODO: need to clean up */
-
 /* Container styles - full width and height */
 .shiki-container {
   position: relative;
@@ -223,6 +221,7 @@
   min-height: var(--shiki-line-height, 1.5rem);
   position: relative;
   white-space: pre;
+  word-break: keep-all;
 }
 
 /* Line with line numbers needs flex display */
@@ -255,69 +254,6 @@
   background-color: light-dark(var(--shiki-light-bg), var(--shiki-dark-bg));
 }
 
-/* Wrap mode - when .wrap class is on .shiki-figure */
-.shiki-figure.wrap .shiki-pre-wrapper {
-  overflow-x: hidden;
-}
-
-.shiki-figure.wrap pre.shiki-pre {
-  white-space: pre-wrap;
-  overflow-wrap: break-word;
-  word-break: normal;
-  width: 100%;
-  min-width: 100%;
-}
-
-.shiki-figure.wrap pre.shiki-pre code {
-  width: 100%;
-  min-width: 100%;
-  white-space: pre-wrap;
-  overflow-wrap: break-word;
-  word-break: normal;
-}
-
-.shiki-figure.wrap .line {
-  white-space: pre-wrap;
-  overflow-wrap: break-word;
-  word-break: normal;
-  width: 100%;
-  min-width: 100%;
-}
-
-/* In wrap mode, ensure line numbers align correctly when lines wrap */
-.shiki-figure.wrap .line.line-numbers {
-  align-items: flex-start;
-}
-
-.shiki-figure.wrap .line-number {
-  align-self: flex-start;
-  padding-top: 0;
-  line-height: var(--shiki-line-height, 1.5);
-}
-
-/* Non-wrap mode - default behavior */
-.shiki-figure:not(.wrap) .shiki-pre-wrapper {
-  overflow-x: auto;
-}
-
-.shiki-figure:not(.wrap) pre.shiki-pre {
-  overflow-x: visible;
-}
-
-.shiki-figure:not(.wrap) .line {
-  white-space: pre;
-  word-break: keep-all;
-}
-
-/* Token colors with CSS variables */
-.shiki-figure span {
-  color: var(--shiki-light);
-}
-
-[data-theme="dark"] .shiki-figure span {
-  color: var(--shiki-dark);
-}
-
 /* Diff and highlight markers - configurable via CSS variables */
 
 /* Base styles for notation lines */
@@ -328,9 +264,9 @@
 }
 
 /* Border style - colored left border with background */
-.notation-border .line.added,
-.notation-border .line.removed,
-.notation-border .line.highlighted {
+.line.added,
+.line.removed,
+.line.highlighted {
   margin: 0 -1rem;
   padding-left: 1rem;
   padding-right: 1rem;
@@ -338,9 +274,9 @@
 }
 
 /* Border style - Style line numbers to match notation backgrounds */
-.notation-border .line.added .line-number::after,
-.notation-border .line.removed .line-number::after,
-.notation-border .line.highlighted .line-number::after {
+.line.added .line-number::after,
+.line.removed .line-number::after,
+.line.highlighted .line-number::after {
   content: "";
   position: absolute;
   left: 0;
@@ -350,62 +286,34 @@
   z-index: -1;
 }
 
-.notation-border .line.added .line-number::after {
+.line.added .line-number::after {
   background-color: var(--shiki-notation-add-bg, rgba(34, 197, 94, 0.1));
 }
 
-.notation-border .line.removed .line-number::after {
+.line.removed .line-number::after {
   background-color: var(--shiki-notation-remove-bg, rgba(239, 68, 68, 0.1));
 }
 
-.notation-border .line.highlighted .line-number::after {
+.line.highlighted .line-number::after {
   background-color: var(--shiki-notation-highlight-bg, rgba(234, 179, 8, 0.1));
 }
 
-.notation-border .line.added .line-number {
+.line.added .line-number {
   border-left: 3px solid var(--shiki-notation-add-border, rgb(34, 197, 94));
   padding-left: calc(1rem - 3px);
 }
 
-.notation-border .line.removed .line-number {
+.line.removed .line-number {
   border-left: 3px solid var(--shiki-notation-remove-border, rgb(239, 68, 68));
   padding-left: calc(1rem - 3px);
   opacity: 0.7;
 }
 
-.notation-border .line.highlight .line-number,
-.notation-border .line.highlighted .line-number {
+.line.highlight .line-number,
+.line.highlighted .line-number {
   border-left: 3px solid
     var(--shiki-notation-highlight-border, rgb(234, 179, 8));
   padding-left: calc(1rem - 3px);
-}
-
-/* Symbol style - show +/- symbols on line numbers instead of border */
-.notation-symbol .line.added .line-number {
-  background-color: var(--shiki-notation-add-bg, rgba(34, 197, 94, 0.1)) !important;
-}
-
-.notation-symbol .line.removed .line-number {
-  background-color: var(--shiki-notation-remove-bg, rgba(239, 68, 68, 0.1)) !important;
-  opacity: 0.7;
-}
-
-.notation-symbol .line.highlighted .line-number {
-  background-color: var(--shiki-notation-highlight-bg, rgba(234, 179, 8, 0.1)) !important;
-}
-
-/* Symbol style - colored backgrounds for whole lines */
-.notation-symbol .shiki-figure .line.added {
-  background-color: var(--shiki-notation-add-bg, rgba(34, 197, 94, 0.1));
-}
-
-.notation-symbol .shiki-figure .line.removed {
-  background-color: var(--shiki-notation-remove-bg, rgba(239, 68, 68, 0.1));
-  opacity: 0.7;
-}
-
-.notation-symbol .shiki-figure .line.highlighted {
-  background-color: var(--shiki-notation-highlight-bg, rgba(234, 179, 8, 0.1));
 }
 
 /* TODO: not working  Symbol style - add symbol as pseudo element on line number */
@@ -414,41 +322,24 @@
   left: 0;
 }
 
-.notation-symbol .line-number[data-notation-symbol]::before {
-  content: attr(data-notation-symbol);
-  position: absolute;
-  left: 0.5rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--shiki-notation-add-border, rgb(34, 197, 94));
-  font-weight: bold;
-  font-family: var(--shiki-font-family, monospace);
-  font-size: 0.875rem;
-  line-height: 1;
-}
-
-.notation-symbol .line.removed .line-number[data-notation-symbol]::before {
-  color: var(--shiki-notation-remove-border, rgb(239, 68, 68));
-}
-
 /* Border style - colored backgrounds and borders */
-.notation-border .shiki-figure .line.added {
+.shiki-figure .line.added {
   background-color: var(--shiki-notation-add-bg, rgba(34, 197, 94, 0.1));
 }
 
-.notation-border .shiki-figure .line.removed {
+.shiki-figure .line.removed {
   background-color: var(--shiki-notation-remove-bg, rgba(239, 68, 68, 0.1));
   opacity: 0.7;
 }
 
-.notation-border .shiki-figure .line.highlighted {
+.shiki-figure .line.highlighted {
   background-color: var(--shiki-notation-highlight-bg, rgba(234, 179, 8, 0.1));
 }
 
 /* Border style - left border indicator using ::after */
-.notation-border .shiki-figure .line.added::after,
-.notation-border .shiki-figure .line.removed::after,
-.notation-border .shiki-figure .line.highlighted::after {
+.shiki-figure .line.added::after,
+.shiki-figure .line.removed::after,
+.shiki-figure .line.highlighted::after {
   content: "";
   position: absolute;
   left: 0;
@@ -457,15 +348,15 @@
   width: 3px;
 }
 
-.notation-border .shiki-figure .line.added::after {
+.shiki-figure .line.added::after {
   background-color: var(--shiki-notation-add-border, rgb(34, 197, 94));
 }
 
-.notation-border .shiki-figure .line.removed::after {
+.shiki-figure .line.removed::after {
   background-color: var(--shiki-notation-remove-border, rgb(239, 68, 68));
 }
 
-.notation-border .shiki-figure .line.highlighted::after {
+.shiki-figure .line.highlighted::after {
   background-color: var(--shiki-notation-highlight-border, rgb(234, 179, 8));
 }
 

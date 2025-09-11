@@ -1,45 +1,45 @@
-// TODO
 import type { NotationOptions, StyleOptions } from "../types.js";
+import { DEFAULT_CSS_VARIABLES } from "./defaults.js";
 
 export const buildCssVariables = (
   styleOptions: StyleOptions,
   notationOptions: NotationOptions
 ): React.CSSProperties => {
-  const rgbaToRgb = (rgba: string | undefined, fallback: string): string => {
-    if (!rgba) return fallback;
-    const noFn = rgba.replace(/rgba?\(([^)]+)\)/, "rgb($1)");
-    return noFn.replace(/,\s*[\d.]+\)/, ")") || fallback;
-  };
-
   return {
-    "--shiki-border-color": styleOptions.borderColor ?? "#e1e4e8",
-    "--shiki-border-radius": styleOptions.borderRadius ?? "6px",
-    "--shiki-padding": styleOptions.padding ?? "1rem",
+    "--shiki-border-color":
+      styleOptions.borderColor ?? DEFAULT_CSS_VARIABLES["--shiki-border-color"],
+    "--shiki-border-radius":
+      styleOptions.borderRadius ??
+      DEFAULT_CSS_VARIABLES["--shiki-border-radius"],
+    "--shiki-padding":
+      styleOptions.padding ?? DEFAULT_CSS_VARIABLES["--shiki-padding"],
     "--shiki-font-family":
-      styleOptions.fontFamily ??
-      "Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace",
-    "--shiki-font-size": styleOptions.fontSize ?? "14px",
-    "--shiki-line-height": styleOptions.lineHeight ?? "1.5",
+      styleOptions.fontFamily ?? DEFAULT_CSS_VARIABLES["--shiki-font-family"],
+    "--shiki-font-size":
+      styleOptions.fontSize ?? DEFAULT_CSS_VARIABLES["--shiki-font-size"],
+    "--shiki-line-height":
+      styleOptions.lineHeight ?? DEFAULT_CSS_VARIABLES["--shiki-line-height"],
     "--shiki-line-number-margin-right":
-      styleOptions.lineNumberMarginRight ?? "0.5rem",
+      styleOptions.lineNumberMarginRight ??
+      DEFAULT_CSS_VARIABLES["--shiki-line-number-margin-right"],
     "--shiki-notation-highlight-bg":
-      notationOptions.highlight?.backgroundColor ?? "rgba(255, 255, 0, 0.1)",
+      notationOptions.highlight?.backgroundColor ??
+      DEFAULT_CSS_VARIABLES["--shiki-notation-highlight-bg"],
     "--shiki-notation-add-bg":
-      notationOptions.add?.backgroundColor ?? "rgba(0, 255, 0, 0.1)",
+      notationOptions.add?.backgroundColor ??
+      DEFAULT_CSS_VARIABLES["--shiki-notation-add-bg"],
     "--shiki-notation-remove-bg":
-      notationOptions.remove?.backgroundColor ?? "rgba(255, 0, 0, 0.1)",
-    "--shiki-notation-highlight-border": rgbaToRgb(
-      notationOptions.highlight?.backgroundColor,
-      "rgb(234, 179, 8)"
-    ),
-    "--shiki-notation-add-border": rgbaToRgb(
-      notationOptions.add?.backgroundColor,
-      "rgb(34, 197, 94)"
-    ),
-    "--shiki-notation-remove-border": rgbaToRgb(
-      notationOptions.remove?.backgroundColor,
-      "rgb(239, 68, 68)"
-    ),
+      notationOptions.remove?.backgroundColor ??
+      DEFAULT_CSS_VARIABLES["--shiki-notation-remove-bg"],
+    "--shiki-notation-highlight-border":
+      notationOptions.highlight?.borderColor ??
+      DEFAULT_CSS_VARIABLES["--shiki-notation-highlight-border"],
+    "--shiki-notation-add-border":
+      notationOptions.add?.borderColor ??
+      DEFAULT_CSS_VARIABLES["--shiki-notation-add-border"],
+    "--shiki-notation-remove-border":
+      notationOptions.remove?.borderColor ??
+      DEFAULT_CSS_VARIABLES["--shiki-notation-remove-border"],
     "--shiki-copy-button-bg": styleOptions.copyButton?.backgroundColor,
     "--shiki-copy-button-color": styleOptions.copyButton?.color,
     "--shiki-copy-button-border": styleOptions.copyButton?.borderColor,

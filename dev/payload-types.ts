@@ -13,58 +13,58 @@
  * via the `definition` "supportedTimezones".
  */
 export type SupportedTimezones =
-  | "Pacific/Midway"
-  | "Pacific/Niue"
-  | "Pacific/Honolulu"
-  | "Pacific/Rarotonga"
-  | "America/Anchorage"
-  | "Pacific/Gambier"
-  | "America/Los_Angeles"
-  | "America/Tijuana"
-  | "America/Denver"
-  | "America/Phoenix"
-  | "America/Chicago"
-  | "America/Guatemala"
-  | "America/New_York"
-  | "America/Bogota"
-  | "America/Caracas"
-  | "America/Santiago"
-  | "America/Buenos_Aires"
-  | "America/Sao_Paulo"
-  | "Atlantic/South_Georgia"
-  | "Atlantic/Azores"
-  | "Atlantic/Cape_Verde"
-  | "Europe/London"
-  | "Europe/Berlin"
-  | "Africa/Lagos"
-  | "Europe/Athens"
-  | "Africa/Cairo"
-  | "Europe/Moscow"
-  | "Asia/Riyadh"
-  | "Asia/Dubai"
-  | "Asia/Baku"
-  | "Asia/Karachi"
-  | "Asia/Tashkent"
-  | "Asia/Calcutta"
-  | "Asia/Dhaka"
-  | "Asia/Almaty"
-  | "Asia/Jakarta"
-  | "Asia/Bangkok"
-  | "Asia/Shanghai"
-  | "Asia/Singapore"
-  | "Asia/Tokyo"
-  | "Asia/Seoul"
-  | "Australia/Brisbane"
-  | "Australia/Sydney"
-  | "Pacific/Guam"
-  | "Pacific/Noumea"
-  | "Pacific/Auckland"
-  | "Pacific/Fiji";
+  | 'Pacific/Midway'
+  | 'Pacific/Niue'
+  | 'Pacific/Honolulu'
+  | 'Pacific/Rarotonga'
+  | 'America/Anchorage'
+  | 'Pacific/Gambier'
+  | 'America/Los_Angeles'
+  | 'America/Tijuana'
+  | 'America/Denver'
+  | 'America/Phoenix'
+  | 'America/Chicago'
+  | 'America/Guatemala'
+  | 'America/New_York'
+  | 'America/Bogota'
+  | 'America/Caracas'
+  | 'America/Santiago'
+  | 'America/Buenos_Aires'
+  | 'America/Sao_Paulo'
+  | 'Atlantic/South_Georgia'
+  | 'Atlantic/Azores'
+  | 'Atlantic/Cape_Verde'
+  | 'Europe/London'
+  | 'Europe/Berlin'
+  | 'Africa/Lagos'
+  | 'Europe/Athens'
+  | 'Africa/Cairo'
+  | 'Europe/Moscow'
+  | 'Asia/Riyadh'
+  | 'Asia/Dubai'
+  | 'Asia/Baku'
+  | 'Asia/Karachi'
+  | 'Asia/Tashkent'
+  | 'Asia/Calcutta'
+  | 'Asia/Dhaka'
+  | 'Asia/Almaty'
+  | 'Asia/Jakarta'
+  | 'Asia/Bangkok'
+  | 'Asia/Shanghai'
+  | 'Asia/Singapore'
+  | 'Asia/Tokyo'
+  | 'Asia/Seoul'
+  | 'Australia/Brisbane'
+  | 'Australia/Sydney'
+  | 'Pacific/Guam'
+  | 'Pacific/Noumea'
+  | 'Pacific/Auckland'
+  | 'Pacific/Fiji';
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "CodeNotationType".
  */
-export type CodeNotationType = ("add" | "remove" | "highlight") | null;
+export type CodeNotationType = ('add' | 'remove' | 'highlight') | null;
 
 export interface Config {
   auth: {
@@ -75,24 +75,18 @@ export interface Config {
     posts: Post;
     media: Media;
     users: User;
-    "payload-locked-documents": PayloadLockedDocument;
-    "payload-preferences": PayloadPreference;
-    "payload-migrations": PayloadMigration;
+    'payload-locked-documents': PayloadLockedDocument;
+    'payload-preferences': PayloadPreference;
+    'payload-migrations': PayloadMigration;
   };
   collectionsJoins: {};
   collectionsSelect: {
     posts: PostsSelect<false> | PostsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
-    "payload-locked-documents":
-      | PayloadLockedDocumentsSelect<false>
-      | PayloadLockedDocumentsSelect<true>;
-    "payload-preferences":
-      | PayloadPreferencesSelect<false>
-      | PayloadPreferencesSelect<true>;
-    "payload-migrations":
-      | PayloadMigrationsSelect<false>
-      | PayloadMigrationsSelect<true>;
+    'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
+    'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
+    'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
   db: {
     defaultIDType: string;
@@ -101,7 +95,7 @@ export interface Config {
   globalsSelect: {};
   locale: null;
   user: User & {
-    collection: "users";
+    collection: 'users';
   };
   jobs: {
     tasks: unknown;
@@ -140,8 +134,8 @@ export interface Post {
         version: number;
         [k: string]: unknown;
       }[];
-      direction: ("ltr" | "rtl") | null;
-      format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
       indent: number;
       version: number;
     };
@@ -200,20 +194,20 @@ export interface PayloadLockedDocument {
   id: string;
   document?:
     | ({
-        relationTo: "posts";
+        relationTo: 'posts';
         value: string | Post;
       } | null)
     | ({
-        relationTo: "media";
+        relationTo: 'media';
         value: string | Media;
       } | null)
     | ({
-        relationTo: "users";
+        relationTo: 'users';
         value: string | User;
       } | null);
   globalSlug?: string | null;
   user: {
-    relationTo: "users";
+    relationTo: 'users';
     value: string | User;
   };
   updatedAt: string;
@@ -226,7 +220,7 @@ export interface PayloadLockedDocument {
 export interface PayloadPreference {
   id: string;
   user: {
-    relationTo: "users";
+    relationTo: 'users';
     value: string | User;
   };
   key?: string | null;
@@ -341,7 +335,7 @@ export interface CodeBlock {
   /**
    * Languages available are specified in the plugin config
    */
-  language: "rust" | "typescript" | "javascript" | "html" | "css";
+  language: 'css' | 'dart' | 'html' | 'javascript' | 'lua' | 'rust' | 'typescript';
   fileName?: string | null;
   notationType?: CodeNotationType;
   /**
@@ -351,70 +345,70 @@ export interface CodeBlock {
   code: string;
   lightTheme?:
     | (
-        | "catppuccin-latte"
-        | "everforest-light"
-        | "github-light"
-        | "github-light-default"
-        | "github-light-high-contrast"
-        | "gruvbox-light-hard"
-        | "gruvbox-light-medium"
-        | "gruvbox-light-soft"
-        | "kanagawa-lotus"
-        | "light-plus"
-        | "material-theme-lighter"
-        | "min-light"
-        | "one-light"
-        | "rose-pine-dawn"
-        | "slack-ochin"
-        | "snazzy-light"
-        | "solarized-light"
-        | "vitesse-light"
+        | 'catppuccin-latte'
+        | 'everforest-light'
+        | 'github-light'
+        | 'github-light-default'
+        | 'github-light-high-contrast'
+        | 'gruvbox-light-hard'
+        | 'gruvbox-light-medium'
+        | 'gruvbox-light-soft'
+        | 'kanagawa-lotus'
+        | 'light-plus'
+        | 'material-theme-lighter'
+        | 'min-light'
+        | 'one-light'
+        | 'rose-pine-dawn'
+        | 'slack-ochin'
+        | 'snazzy-light'
+        | 'solarized-light'
+        | 'vitesse-light'
       )
     | null;
   darkTheme?:
     | (
-        | "andromeeda"
-        | "aurora-x"
-        | "ayu-dark"
-        | "catppuccin-frappe"
-        | "catppuccin-macchiato"
-        | "catppuccin-mocha"
-        | "dark-plus"
-        | "dracula"
-        | "dracula-soft"
-        | "everforest-dark"
-        | "github-dark"
-        | "github-dark-default"
-        | "github-dark-dimmed"
-        | "github-dark-high-contrast"
-        | "gruvbox-dark-hard"
-        | "gruvbox-dark-medium"
-        | "gruvbox-dark-soft"
-        | "houston"
-        | "kanagawa-dragon"
-        | "kanagawa-wave"
-        | "laserwave"
-        | "material-theme"
-        | "material-theme-darker"
-        | "material-theme-ocean"
-        | "material-theme-palenight"
-        | "min-dark"
-        | "monokai"
-        | "night-owl"
-        | "nord"
-        | "one-dark-pro"
-        | "plastic"
-        | "poimandres"
-        | "red"
-        | "rose-pine"
-        | "rose-pine-moon"
-        | "slack-dark"
-        | "solarized-dark"
-        | "synthwave-84"
-        | "tokyo-night"
-        | "vesper"
-        | "vitesse-black"
-        | "vitesse-dark"
+        | 'andromeeda'
+        | 'aurora-x'
+        | 'ayu-dark'
+        | 'catppuccin-frappe'
+        | 'catppuccin-macchiato'
+        | 'catppuccin-mocha'
+        | 'dark-plus'
+        | 'dracula'
+        | 'dracula-soft'
+        | 'everforest-dark'
+        | 'github-dark'
+        | 'github-dark-default'
+        | 'github-dark-dimmed'
+        | 'github-dark-high-contrast'
+        | 'gruvbox-dark-hard'
+        | 'gruvbox-dark-medium'
+        | 'gruvbox-dark-soft'
+        | 'houston'
+        | 'kanagawa-dragon'
+        | 'kanagawa-wave'
+        | 'laserwave'
+        | 'material-theme'
+        | 'material-theme-darker'
+        | 'material-theme-ocean'
+        | 'material-theme-palenight'
+        | 'min-dark'
+        | 'monokai'
+        | 'night-owl'
+        | 'nord'
+        | 'one-dark-pro'
+        | 'plastic'
+        | 'poimandres'
+        | 'red'
+        | 'rose-pine'
+        | 'rose-pine-moon'
+        | 'slack-dark'
+        | 'solarized-dark'
+        | 'synthwave-84'
+        | 'tokyo-night'
+        | 'vesper'
+        | 'vitesse-black'
+        | 'vitesse-dark'
       )
     | null;
   /**
@@ -425,13 +419,9 @@ export interface CodeBlock {
    * Show language label on the right top corner of the code block
    */
   showLanguageLabel?: boolean | null;
-  /**
-   * Wrap the code if it exceeds the container width
-   */
-  wrap?: boolean | null;
   id?: string | null;
   blockName?: string | null;
-  blockType: "code";
+  blockType: 'code';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -441,6 +431,7 @@ export interface Auth {
   [k: string]: unknown;
 }
 
-declare module "payload" {
+
+declare module 'payload' {
   export interface GeneratedTypes extends Config {}
 }

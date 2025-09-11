@@ -12,7 +12,6 @@ type BuildTransformersParams = Pick<
   | "startLineNumber"
   | "notationType"
   | "notationRange"
-  | "wrap"
 >;
 
 export const buildTransformers = (
@@ -27,7 +26,6 @@ export const buildTransformers = (
     startLineNumber,
     notationType,
     notationRange,
-    wrap,
   } = params;
 
   const transformers: ShikiTransformer[] = [];
@@ -39,7 +37,6 @@ export const buildTransformers = (
       showLineNumbers,
       language,
       startLineNumber,
-      wrap,
     })
   );
 
