@@ -51,6 +51,15 @@
   transition: all 0.15s ease;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Show copy button on container hover */
+.shiki-container:hover .shiki-copy-button,
+.shiki-copy-button:focus {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .shiki-copy-button:hover {
