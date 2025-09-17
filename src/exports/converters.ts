@@ -1,1 +1,4 @@
-export { createCodeBlockJSXConverter } from "../converters/jsx-converter.js";
+export {
+  createCodeBlockJSXConverter,
+  mergeCodeBlockConverter,
+} from "../converters/jsx-converter.js";

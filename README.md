@@ -106,13 +106,22 @@ To render code blocks on your frontend, add the JSX converters:
 
 ```typescript
 // For React frontend rendering
-import { createCodeBlockJSXConverter } from 'payload-shiki-code/converters'
+import { createCodeBlockJSXConverter, mergeCodeBlockConverter } from 'payload-shiki-code/converters'
 
+// Using a helper function
+const jsxConverters: JSXConvertersFunction<NodeTypes> = ({
+  defaultConverters,
+}) => mergeCodeBlockConverter(defaultConverters, "test"); // extra classnames to the code block
+
+// Or manually merging
 const jsxConverters: JSXConvertersFunction<NodeTypes> = ({
   defaultConverters,
 }) => ({
   ...defaultConverters,
-  ...createCodeBlockJSXConverter("test"), // extra classnames to the code block
+  blocks: {
+    ...defaultConverters.blocks,
+    ...createCodeBlockJSXConverter("test").blocks,
+  },
 });
 
 // Use with your richtext rendering
