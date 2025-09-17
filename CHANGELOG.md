@@ -1,5 +1,11 @@
 # payload-shiki-code
 
+## 0.0.3
+
+### Patch Changes
+
+- fe12db7: Use global var to store plugin options
+
 ## 0.0.2
 
 ### Patch Changes
