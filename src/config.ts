@@ -1,15 +1,14 @@
 import type { Block } from "payload";
 import { trimCode } from "./hooks/trim-code.js";
 import { updateBlockName } from "./hooks/update-block-name.js";
-import { PluginStateManager } from "./PluginStateManager.js";
+import { getPluginConfig } from "./store.js";
 import { getFilteredLanguageOptions } from "./utils/langs.js";
 import { extractThemeOptions } from "./utils/themes.js";
 import { validateFileName } from "./validations/validate-file-name.js";
 import { validateNotationRange } from "./validations/validate-notation-range.js";
 
 export const createBlockConfig = (): Block => {
-  const stateManager = PluginStateManager.getInstance();
-  const context = stateManager.getContext();
+  const config = getPluginConfig();
 
   const {
     blockSlug = "code",
@@ -17,7 +16,7 @@ export const createBlockConfig = (): Block => {
     displayOptions = {},
     shiki = {},
     languages = ["text" as const],
-  } = context.config;
+  } = config || {};
 
   const {
     lineNumbers: showLineNumbers = true,

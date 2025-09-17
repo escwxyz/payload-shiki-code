@@ -1,5 +1,5 @@
 import type { ShikiTransformer } from "shiki/core";
-import { PluginStateManager } from "../PluginStateManager.js";
+import { getPluginConfig } from "../store.js";
 import { DEFAULT_NOTATION_OPTIONS } from "../utils/defaults.js";
 /**
  * Create a line notation transformer based on Payload field data
@@ -36,12 +36,11 @@ export const createLineNotationTransformer = ({
     }
   }
 
-  // Get notation options from state manager
-  const stateManager = PluginStateManager.getInstance();
-  const context = stateManager.getContext();
+  // Get notation options from config
+  const pluginConfig = getPluginConfig();
   const notationOptions = {
     ...DEFAULT_NOTATION_OPTIONS,
-    ...context.config.notationOptions,
+    ...pluginConfig?.notationOptions,
   };
   const config = notationOptions[notationType];
   const markerClass = config?.className || notationType;

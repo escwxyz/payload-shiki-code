@@ -1,5 +1,5 @@
 import type { ShikiTransformer } from "shiki";
-import { PluginStateManager } from "../PluginStateManager.js";
+import { getPluginConfig } from "../store.js";
 import type {
   CodeBlockData,
   DisplayOptions,
@@ -34,28 +34,30 @@ export const CodeBlock = async ({
   className,
   CopyButton: CustomCopyButton,
 }: CodeBlockProps) => {
-  const stateManager = PluginStateManager.getInstance();
-  const pluginContext = stateManager.getContext();
-  const { config } = pluginContext;
+  const config = getPluginConfig();
+
+  if (!config) {
+    throw new Error("Plugin configuration not found");
+  }
 
   const displayOptions: DisplayOptions = {
     ...DEFAULT_DISPLAY_OPTIONS,
-    ...config.displayOptions,
+    ...config?.displayOptions,
   };
 
   const shikiOptions: ShikiOptions = {
     ...DEFAULT_SHIKI_OPTIONS,
-    ...config.shiki,
+    ...config?.shiki,
   };
 
   const styleOptions: StyleOptions = {
     ...DEFAULT_STYLE_OPTIONS,
-    ...config.styleOptions,
+    ...config?.styleOptions,
   };
 
   const notationOptions: NotationOptions = {
     ...DEFAULT_NOTATION_OPTIONS,
-    ...config.notationOptions,
+    ...config?.notationOptions,
   };
 
   const {
@@ -76,7 +78,7 @@ export const CodeBlock = async ({
     dark: darkTheme || shikiOptions.themes?.dark,
   };
 
-  if (config.hooks?.beforeRender) {
+  if (config?.hooks?.beforeRender) {
     await config.hooks.beforeRender(code, language, data);
   }
 

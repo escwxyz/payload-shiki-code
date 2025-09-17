@@ -436,12 +436,3 @@ export type CodeBlockData = {
   showLanguageLabel?: boolean;
   startLineNumber?: number;
 };
-
-/**
- * Internal context for storing plugin options
- */
-export type PluginContext = {
-  config: PayloadShikiCodeConfig;
-  highlighter?: HighlighterGeneric<BundledLanguage, BundledTheme>;
-  initialized: boolean;
-};
