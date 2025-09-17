@@ -1,14 +1,12 @@
-import type { BundledLanguage, BundledTheme, HighlighterGeneric } from "shiki";
+import type {
+  BundledLanguage,
+  BundledTheme,
+  HighlighterGeneric,
+  SpecialLanguage,
+} from "shiki";
 import { getSingletonHighlighter } from "shiki";
-import type { PayloadShikiCodeConfig } from "./types.js";
+import type { PayloadShikiCodeConfig, PluginStore } from "./types.js";
 import { extractThemeOptions } from "./utils/themes.js";
-
-interface PluginStore {
-  config: PayloadShikiCodeConfig;
-  highlighter?: HighlighterGeneric<BundledLanguage, BundledTheme>;
-  initialized: boolean;
-  isLocalizationEnabled?: boolean;
-}
 
 let pluginStore: PluginStore | undefined;
 
@@ -28,7 +26,10 @@ export function getPluginStore(): PluginStore | undefined {
 }
 
 export function setHighlighter(
-  highlighter: HighlighterGeneric<BundledLanguage, BundledTheme>
+  highlighter: HighlighterGeneric<
+    BundledLanguage | SpecialLanguage,
+    BundledTheme
+  >
 ) {
   if (pluginStore) {
     pluginStore.highlighter = highlighter;
@@ -37,7 +38,7 @@ export function setHighlighter(
 }
 
 export function getHighlighter():
-  | HighlighterGeneric<BundledLanguage, BundledTheme>
+  | HighlighterGeneric<BundledLanguage | SpecialLanguage, BundledTheme>
   | undefined {
   return pluginStore?.highlighter;
 }
@@ -57,11 +58,11 @@ export async function initializeHighlighter(
       ...extractThemeOptions().dark,
     ].map((theme) => theme.value);
 
-    const highlighter = await getSingletonHighlighter({
+    const highlighter = (await getSingletonHighlighter({
       themes: allThemes,
       langs,
       ...config.shiki?.highlighterOptions,
-    });
+    })) as HighlighterGeneric<BundledLanguage | SpecialLanguage, BundledTheme>;
 
     setHighlighter(highlighter);
 
