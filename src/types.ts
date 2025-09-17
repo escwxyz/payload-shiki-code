@@ -189,7 +189,10 @@ export type PluginHooks = {
    * Called when the highlighter is created
    */
   onHighlighterCreate?: (
-    highlighter: HighlighterGeneric<BundledLanguage, BundledTheme>
+    highlighter: HighlighterGeneric<
+      BundledLanguage | SpecialLanguage,
+      BundledTheme
+    >
   ) => void | Promise<void>;
 
   /**
@@ -437,11 +440,12 @@ export type CodeBlockData = {
   startLineNumber?: number;
 };
 
-/**
- * Internal context for storing plugin options
- */
-export type PluginContext = {
+export type PluginStore = {
   config: PayloadShikiCodeConfig;
-  highlighter?: HighlighterGeneric<BundledLanguage, BundledTheme>;
+  highlighter?: HighlighterGeneric<
+    BundledLanguage | SpecialLanguage,
+    BundledTheme
+  >;
   initialized: boolean;
+  isLocalizationEnabled?: boolean;
 };

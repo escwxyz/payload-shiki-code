@@ -10,9 +10,9 @@ export type CopyButtonProps = {
   /** Optional aria-label for accessibility */
   ariaLabel?: string;
   /** Callback when copy succeeds */
-  onCopySuccess?: () => void;
+  onCopySuccessAction?: () => void;
   /** Callback when copy fails */
-  onCopyError?: (error: Error) => void;
+  onCopyErrorAction?: (error: Error) => void;
   /** Duration to show success state in milliseconds */
   successDuration?: number;
 };
@@ -56,8 +56,8 @@ export const CopyButton = ({
   code,
   className,
   ariaLabel = "Copy code to clipboard",
-  onCopySuccess,
-  onCopyError,
+  onCopySuccessAction,
+  onCopyErrorAction,
   successDuration = 2000,
 }: CopyButtonProps) => {
   const [isCopied, setIsCopied] = useState(false);
@@ -70,16 +70,16 @@ export const CopyButton = ({
     try {
       await navigator.clipboard.writeText(code);
       setIsCopied(true);
-      onCopySuccess?.();
+      onCopySuccessAction?.();
 
       setTimeout(() => {
         setIsCopied(false);
       }, successDuration);
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
-      onCopyError?.(err);
+      onCopyErrorAction?.(err);
     }
-  }, [code, isCopied, onCopySuccess, onCopyError, successDuration]);
+  }, [code, isCopied, onCopySuccessAction, onCopyErrorAction, successDuration]);
 
   const classes = ["shiki-copy-button", className].filter(Boolean).join(" ");
 

@@ -1,6 +1,7 @@
 import type { Config, Plugin } from "payload";
-import { PluginStateManager } from "./PluginStateManager.js";
+import { initializeHighlighter, setPluginConfig } from "./store.js";
 import type { PayloadShikiCodeConfig } from "./types.js";
+import { normalizeLanguages } from "./utils/langs.js";
 
 export const payloadShikiCode =
   (pluginOptions: PayloadShikiCodeConfig = {}): Plugin =>
@@ -10,8 +11,13 @@ export const payloadShikiCode =
     }
 
     try {
-      const stateManager = PluginStateManager.getInstance();
-      stateManager.initializeSync(pluginOptions);
+      const normalizedConfig = { ...pluginOptions };
+      if (pluginOptions.languages) {
+        normalizedConfig.languages = normalizeLanguages(
+          pluginOptions.languages
+        );
+      }
+      setPluginConfig(normalizedConfig);
     } catch (error) {
       console.error("Failed to initialize Payload Shiki Code plugin:", error);
     }
@@ -24,8 +30,13 @@ export const payloadShikiCode =
           await incomingConfig.onInit(payload);
         }
         try {
-          const stateManager = PluginStateManager.getInstance();
-          await stateManager.initialize(pluginOptions);
+          const normalizedConfig = { ...pluginOptions };
+          if (pluginOptions.languages) {
+            normalizedConfig.languages = normalizeLanguages(
+              pluginOptions.languages
+            );
+          }
+          await initializeHighlighter(normalizedConfig);
         } catch (error) {
           console.error(
             "Failed to complete Payload Shiki Code plugin initialization:",
