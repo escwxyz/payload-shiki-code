@@ -1,6 +1,6 @@
 {
   "name": "payload-shiki-code",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A server rendered code block component powered by Shiki for Payload CMS",
   "repository": {
     "type": "git",
