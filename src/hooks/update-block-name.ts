@@ -1,12 +1,10 @@
-import type { FieldHook } from "payload";
+import type { FieldHook } from 'payload';
 
 export const updateBlockName: FieldHook = async ({ value, blockData }) => {
-  if (typeof value === "string" && value.trim().length > 0) {
-    const fileName = value.trim();
+  if (blockData && typeof value === 'string') {
+    const title = value.trim();
 
-    if (blockData) {
-      blockData.blockName = fileName;
-    }
+    blockData.blockName = title.length > 0 ? title : undefined;
   }
 
   return value;
